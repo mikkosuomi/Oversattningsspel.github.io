@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSentenceIndex = 0;
     let playerGuess = [];
     let selectedWordElements = [];
-    let translationMode = 'swe-fin'; // 'swe-fin' or 'fin-swe'
+    let translationMode = 'fin-swe'; // 'swe-fin' or 'fin-swe'
 
     // Fetch sentences from the text file
     fetch('sentences.txt')
@@ -81,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function startGame() {
         shuffleArray(sentences);
         currentSentenceIndex = 0;
+        updateFlagDisplay();
         loadSentence();
     }
 
