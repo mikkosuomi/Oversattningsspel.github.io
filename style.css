@@ -11,6 +11,15 @@ body {
     background: radial-gradient(circle, #2a2a2a, #121212);
     color: #ffffff; /* Light text */
     overflow-x: hidden; /* Hide horizontal scrollbar from banners */
+    /* Disable text selection and dragging */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
 }
 
 
@@ -21,6 +30,47 @@ body {
     z-index: 0; /* Bring it above the background */
     opacity: 0.2;
     pointer-events: none; /* Make the SVG itself non-interactive */
+}
+
+.pin {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: #ff3b3b;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 8px #ff3b3b;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.spark {
+    position: fixed;
+    width: 3px;
+    height: 3px;
+    background-color: #ffff00;
+    border-radius: 50%;
+    z-index: 999;
+    pointer-events: none;
+    animation: spark-fly 0.6s ease-out forwards;
+}
+
+@keyframes spark-fly {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 4px #ffff00;
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(0.8);
+        box-shadow: 0 0 6px #ffaa00;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.3);
+        box-shadow: 0 0 2px #ff6600;
+    }
 }
 
 h1 {
@@ -37,6 +87,51 @@ h1 {
     width: 90%;
     max-width: 600px;
     z-index: 1;
+    position: relative;
+}
+
+#score-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 10;
+}
+
+#score-number {
+    color: #ffffff;
+    font-size: 1.2em;
+    font-weight: 600;
+    text-shadow: 0 0 8px #ffffff;
+    min-width: 20px;
+    text-align: right;
+}
+
+.score-pin {
+    background-color: #000000 !important;
+    border: 2px solid #fff !important;
+    box-shadow: 0 0 8px #000000 !important;
+    position: relative !important;
+    cursor: grab;
+    transition: all 0.3s ease;
+}
+
+.score-pin.correct {
+    background-color: #00ff00 !important;
+    box-shadow: 0 0 8px #00ff00 !important;
+}
+
+.score-pin.dragging {
+    cursor: grabbing;
+    z-index: 10000;
+}
+
+.green-pin {
+    background-color: #00ff00 !important;
+    border: 2px solid #fff !important;
+    box-shadow: 0 0 8px #00ff00 !important;
 }
 
 #swedish-sentence-container {

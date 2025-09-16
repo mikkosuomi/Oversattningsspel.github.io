@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Bouncing flag animation
     const flag = document.getElementById('bouncing-flag');
     const flagClickArea = document.createElement('div');
+    flagClickArea.id = 'flag-click-area'; // Add an ID
     flagClickArea.style.position = 'fixed';
     flagClickArea.style.width = '100px';
     flagClickArea.style.height = '60px';
@@ -13,26 +14,108 @@ document.addEventListener('DOMContentLoaded', () => {
     let dx = (Math.random() - 0.5) * 2;
     let dy = (Math.random() - 0.5) * 2;
     let speedMultiplier = 1;
+    let baseSpeedMultiplier = 1; // Increases by 5% with each correct answer
+    let pins = [];
+    let score = 0;
+    let speedBoostEndTime = 0; // Track when speed boost should end
+    let speedBoostInterval = null;
+
+    function startSpeedBoost(duration = 3000, multiplier = 200) {
+        // Clear existing boost interval if any
+        if (speedBoostInterval) {
+            clearInterval(speedBoostInterval);
+        }
+
+        speedMultiplier = multiplier;
+        speedBoostEndTime = Date.now() + duration;
+
+        speedBoostInterval = setInterval(() => {
+            const timeLeft = speedBoostEndTime - Date.now();
+            if (timeLeft <= 0) {
+                speedMultiplier = 1;
+                clearInterval(speedBoostInterval);
+                speedBoostInterval = null;
+            } else {
+                // Gradually reduce speed as time runs out
+                const progress = timeLeft / duration;
+                speedMultiplier = 1 + (multiplier - 1) * progress;
+            }
+        }, 50);
+    }
 
     flagClickArea.addEventListener('click', () => {
         // Prevent new speed boosts while one is active
         if (speedMultiplier > 1) return;
 
-        speedMultiplier = 200; // A large spike in speed
+        startSpeedBoost(3000, 200);
+    });
 
-        // Gradually reduce the speed multiplier back to 1 over 3 seconds
-        const fadeOutInterval = setInterval(() => {
-            speedMultiplier -= 5;
-            if (speedMultiplier <= 1) {
-                speedMultiplier = 1;
-                clearInterval(fadeOutInterval);
+    document.body.addEventListener('mousedown', (e) => {
+        // Prevent dropping pins on UI elements, the flag, or the flag's click area
+        if (e.target.closest('#game-container, #flag-click-area, #bouncing-flag, .pin')) {
+            return;
+        }
+
+        if (e.button === 0) { // Left-click to add a pin
+            const pin = document.createElement('div');
+            pin.classList.add('pin');
+            // Adjust position to center the pin on the cursor
+            pin.style.left = (e.clientX - 5) + 'px';
+            pin.style.top = (e.clientY - 5) + 'px';
+            document.body.appendChild(pin);
+            pins.push(pin);
+            checkCollision(pin); // Check for collision immediately
+
+            pin.addEventListener('mousedown', (e) => {
+                if (e.button === 2) { // Right-click to remove a pin
+                    e.stopPropagation(); // Prevent dropping a new pin
+                    pin.remove();
+                    pins = pins.filter(p => p !== pin);
+                }
+            });
+        }
+    });
+
+    window.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+    });
+
+    // Disable text selection and dragging
+    document.addEventListener('selectstart', (e) => {
+        e.preventDefault();
+    });
+    
+    document.addEventListener('dragstart', (e) => {
+        e.preventDefault();
+    });
+
+    // R key to reset flag
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'r') {
+            // Reset flag position to random location
+            x = Math.random() * (window.innerWidth - 100);
+            y = Math.random() * (window.innerHeight - 60);
+            
+            // Reset flag direction to random
+            dx = (Math.random() - 0.5) * 2;
+            dy = (Math.random() - 0.5) * 2;
+            
+            // Clear any active speed boost
+            if (speedBoostInterval) {
+                clearInterval(speedBoostInterval);
+                speedBoostInterval = null;
             }
-        }, 75); // 40 steps * 75ms = 3000ms = 3 seconds
+            speedMultiplier = 1;
+            speedBoostEndTime = 0;
+            
+            // Reset base speed multiplier
+            baseSpeedMultiplier = 1;
+        }
     });
 
     function animate() {
-        x += dx * speedMultiplier;
-        y += dy * speedMultiplier;
+        x += dx * speedMultiplier * baseSpeedMultiplier;
+        y += dy * speedMultiplier * baseSpeedMultiplier;
 
         // Bounce off the walls
         if (x <= 0 || x >= window.innerWidth - 100) {
@@ -42,6 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
             dy = -dy;
         }
 
+        // Collision with pins
+        pins.forEach(checkCollision);
+
         flag.style.left = x + 'px';
         flag.style.top = y + 'px';
         flagClickArea.style.left = x + 'px';
@@ -49,6 +135,204 @@ document.addEventListener('DOMContentLoaded', () => {
 
         requestAnimationFrame(animate);
     }
+
+    function createSparks(centerX, centerY) {
+        // Create 3-5 sparks for a nice effect without being too heavy
+        const sparkCount = 3 + Math.floor(Math.random() * 3);
+        
+        for (let i = 0; i < sparkCount; i++) {
+            const spark = document.createElement('div');
+            spark.classList.add('spark');
+            
+            // Random direction and distance for each spark
+            const angle = (Math.PI * 2 * i) / sparkCount + (Math.random() - 0.5) * 0.5;
+            const distance = 15 + Math.random() * 20;
+            const sparkX = centerX + Math.cos(angle) * distance;
+            const sparkY = centerY + Math.sin(angle) * distance;
+            
+            spark.style.left = centerX + 'px';
+            spark.style.top = centerY + 'px';
+            
+            document.body.appendChild(spark);
+            
+            // Animate to final position
+            setTimeout(() => {
+                spark.style.left = sparkX + 'px';
+                spark.style.top = sparkY + 'px';
+            }, 10);
+            
+            // Remove spark after animation completes
+            setTimeout(() => {
+                if (spark.parentNode) {
+                    spark.parentNode.removeChild(spark);
+                }
+            }, 600);
+        }
+    }
+
+    function checkCollision(pin) {
+        const pinRect = pin.getBoundingClientRect();
+        const flagRect = flag.getBoundingClientRect();
+
+        if (
+            flagRect.left < pinRect.right &&
+            flagRect.right > pinRect.left &&
+            flagRect.top < pinRect.bottom &&
+            flagRect.bottom > pinRect.top
+        ) {
+            // Calculate centers for better collision detection
+            const flagCenterX = x + 50; // flag width is 100px, so center is at x + 50
+            const flagCenterY = y + 30; // flag height is 60px, so center is at y + 30
+            const pinCenterX = pinRect.left + pinRect.width / 2;
+            const pinCenterY = pinRect.top + pinRect.height / 2;
+
+            // Create sparks at collision point
+            createSparks(pinCenterX, pinCenterY);
+
+            // Special handling for green pins
+            if (pin.classList.contains('green-pin')) {
+                // Green pin gives 300% speed boost and extends timer by 3 seconds
+                if (speedMultiplier < 3) {
+                    // If no boost or lower boost, start 300% boost
+                    startSpeedBoost(3000, 3);
+                } else {
+                    // If already boosted, extend the timer by 3 seconds
+                    speedBoostEndTime += 3000;
+                }
+            }
+
+            // Calculate direction from pin to flag
+            const deltaX = flagCenterX - pinCenterX;
+            const deltaY = flagCenterY - pinCenterY;
+
+            // Determine which side to bounce from based on the larger overlap
+            const overlapX = (flagRect.width + pinRect.width) / 2 - Math.abs(deltaX);
+            const overlapY = (flagRect.height + pinRect.height) / 2 - Math.abs(deltaY);
+
+            if (overlapX < overlapY) {
+                // Horizontal collision - bounce horizontally
+                dx = -dx;
+                // Push flag away from pin horizontally
+                if (deltaX > 0) {
+                    x = pinCenterX + pinRect.width / 2 + 50; // Move flag to right of pin
+                } else {
+                    x = pinCenterX - pinRect.width / 2 - 50; // Move flag to left of pin
+                }
+            } else {
+                // Vertical collision - bounce vertically
+                dy = -dy;
+                // Push flag away from pin vertically
+                if (deltaY > 0) {
+                    y = pinCenterY + pinRect.height / 2 + 30; // Move flag below pin
+                } else {
+                    y = pinCenterY - pinRect.height / 2 - 30; // Move flag above pin
+                }
+            }
+
+            // Ensure flag stays within screen bounds after collision
+            x = Math.max(0, Math.min(x, window.innerWidth - 100));
+            y = Math.max(0, Math.min(y, window.innerHeight - 60));
+        }
+    }
+
+    // Pin drag functionality
+    const scorePin = document.getElementById('score-pin');
+    const scoreNumber = document.getElementById('score-number');
+    let isDragging = false;
+    let draggedPin = null;
+    let dragOffsetX = 0;
+    let dragOffsetY = 0;
+
+    function createDraggableGreenPin(x, y) {
+        const greenPin = document.createElement('div');
+        greenPin.classList.add('pin', 'green-pin');
+        greenPin.style.left = (x - 5) + 'px';
+        greenPin.style.top = (y - 5) + 'px';
+        document.body.appendChild(greenPin);
+        pins.push(greenPin);
+        
+        // Add drag functionality to green pin
+        addGreenPinDragHandlers(greenPin);
+        
+        return greenPin;
+    }
+
+    function addGreenPinDragHandlers(greenPin) {
+        greenPin.addEventListener('mousedown', (e) => {
+            if (e.button === 2) {
+                // Right-click to remove
+                e.stopPropagation();
+                greenPin.remove();
+                pins = pins.filter(p => p !== greenPin);
+                return;
+            }
+            
+            if (e.button === 0) {
+                // Left-click to drag
+                e.stopPropagation();
+                startDragging(greenPin, e);
+            }
+        });
+    }
+
+    function startDragging(pin, e) {
+        isDragging = true;
+        draggedPin = pin;
+        
+        // Create dragging visual feedback
+        pin.classList.add('dragging');
+        
+        // Set drag offset to center the pin on cursor
+        dragOffsetX = 5; // Half of pin width
+        dragOffsetY = 5; // Half of pin height
+        
+        // Position pin at cursor immediately
+        pin.style.position = 'fixed';
+        pin.style.left = (e.clientX - dragOffsetX) + 'px';
+        pin.style.top = (e.clientY - dragOffsetY) + 'px';
+        pin.style.zIndex = '10000';
+        
+        e.preventDefault();
+    }
+
+    // Score pin drag handler
+    scorePin.addEventListener('mousedown', (e) => {
+        if (!scorePin.classList.contains('correct') || e.button !== 0) return;
+        
+        // Create a new green pin at cursor position and start dragging it
+        const newGreenPin = createDraggableGreenPin(e.clientX, e.clientY);
+        startDragging(newGreenPin, e);
+        
+        // Decrease score by 1 (taking one pin from the stack)
+        score = Math.max(0, score - 1);
+        scoreNumber.textContent = score.toString();
+        
+        // If score reaches 0, turn pin back to black
+        if (score === 0) {
+            scorePin.classList.remove('correct');
+        }
+        
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging || !draggedPin) return;
+        
+        draggedPin.style.left = (e.clientX - dragOffsetX) + 'px';
+        draggedPin.style.top = (e.clientY - dragOffsetY) + 'px';
+    });
+
+    document.addEventListener('mouseup', (e) => {
+        if (!isDragging || !draggedPin) return;
+        
+        isDragging = false;
+        draggedPin.classList.remove('dragging');
+        
+        // Reset z-index but keep the pin where it was dropped
+        draggedPin.style.zIndex = '1000';
+        
+        draggedPin = null;
+    });
 
     requestAnimationFrame(animate);
 
@@ -148,6 +432,12 @@ document.addEventListener('DOMContentLoaded', () => {
             nextSentenceBtn.classList.remove('btn-hidden');
             // Prevent further word selection after correct answer
             finnishWordsContainerEl.style.pointerEvents = 'none';
+            // Increase base speed by 5% for each correct answer
+            baseSpeedMultiplier *= 1.05;
+            // Update score and pin
+            score++;
+            scoreNumber.textContent = score.toString();
+            scorePin.classList.add('correct');
         } else {
             const correctWords = correctSentence.split(' ');
             // If the player's guess is the same length as the correct answer, it must be wrong.
