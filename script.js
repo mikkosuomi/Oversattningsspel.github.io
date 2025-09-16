@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     function startGame() {
+        shuffleArray(sentences);
         currentSentenceIndex = 0;
         loadSentence();
     }
@@ -35,6 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
         finnishWordsContainerEl.innerHTML = '';
 
         if (currentSentenceIndex >= sentences.length) {
+            shuffleArray(sentences); // Re-shuffle for a new round
             currentSentenceIndex = 0; // Loop back to the start
         }
 
