@@ -1,10 +1,88 @@
-Virtuell verklighet (VR) skapar en helt uppslukande upplevelse. | Virtuaalitodellisuus (VR) luo täysin immersiivisen kokemuksen.
-Förstärkt verklighet (AR) lägger digital information över den verkliga världen. | Lisätty todellisuus (AR) lisää digitaalista tietoa todellisen maailman päälle.
-En mjukvaruutvecklare skriver och underhåller kod. | Ohjelmistokehittäjä kirjoittaa ja ylläpitää koodia.
-Användargränssnittet (UI) är avgörande för en bra användarupplevelse (UX). | Käyttöliittymä (UI) on ratkaiseva hyvän käyttäjäkokemuksen (UX) kannalta.
-Ett API (Application Programming Interface) låter olika program kommunicera. | API (sovellusliittymä) antaa eri ohjelmien kommunikoida keskenään.
-Molntjänster erbjuder skalbar datorkraft och lagring. | Pilvipalvelut tarjoavat skaalautuvaa laskentatehoa ja tallennustilaa.
-Maskininlärning är en gren av artificiell intelligens. | Koneoppiminen on tekoälyn haara.
-En spelmotor tillhandahåller de grundläggande funktionerna för spelutveckling. | Pelimoottori tarjoaa perustoiminnot pelinkehitykseen.
-3D-modellering används för att skapa tredimensionella objekt. | 3D-mallinnusta käytetään kolmiulotteisten objektien luomiseen.
-Haptisk feedback simulerar känseln av beröring. | Haptinen palaute simuloi kosketuksen tunnetta.
+Strålspårning är en renderingsteknik för att skapa realistiska bilder. | Säteenseuranta on renderöintitekniikka realististen kuvien luomiseen.
+En fysikmotor simulerar fysiska lagar i ett spel. | Fysiikkamoottori simuloi fysiikan lakeja pelissä.
+Speldesignern skapar reglerna och strukturen i ett spel. | Pelisuunnittelija luo pelin säännöt ja rakenteen.
+En leveldesigner bygger spelvärldens miljöer. | Kenttäsuunnittelija rakentaa pelimaailman ympäristöjä.
+AI-fiender kan använda komplexa strategier för att utmana spelaren. | Tekoälyviholliset voivat käyttää monimutkaisia strategioita haastaakseen pelaajan.
+Procedurell generering skapar innehåll algoritmiskt. | Proseduraalinen generointi luo sisältöä algoritmisesti.
+Ett VR-headset spårar huvudets rörelser för att ändra synfältet. | VR-lasit seuraavat pään liikkeitä muuttaakseen näkökenttää.
+Rörelsekontroller låter spelaren interagera med den virtuella världen med händerna. | Liikeohjaimet antavat pelaajan olla vuorovaikutuksessa virtuaalimaailman kanssa käsillään.
+Rumsskalig VR låter dig gå runt i ett fysiskt utrymme. | Huoneenlaajuinen VR antaa sinun kävellä fyysisessä tilassa.
+Latenstid i VR kan orsaka åksjuka. | Viive VR:ssä voi aiheuttaa matkapahoinvointia.
+En spelproducent övervakar utvecklingsprocessen. | Pelituottaja valvoo kehitysprosessia.
+En konceptkonstnär skapar den visuella stilen för ett spel. | Konseptitaiteilija luo pelin visuaalisen tyylin.
+Ljuddesign är viktigt för att skapa en stämningsfull atmosfär. | Äänisuunnittelu on tärkeää tunnelmallisen ilmapiirin luomiseksi.
+Ett spelmanus innehåller dialog och berättelsens händelser. | Pelikäsikirjoitus sisältää dialogin ja tarinan tapahtumat.
+Kvalitetssäkring (QA) innebär att testa spelet för att hitta buggar. | Laadunvarmistus (QA) tarkoittaa pelin testaamista bugien löytämiseksi.
+En bugg är ett fel i programkoden. | Bugi on virhe ohjelmakoodissa.
+En patch är en uppdatering som fixar buggar eller lägger till innehåll. | Korjaustiedosto on päivitys, joka korjaa bugeja tai lisää sisältöä.
+Early access låter spelare köpa och spela ett spel innan det är färdigt. | Early access antaa pelaajien ostaa ja pelata peliä ennen sen valmistumista.
+Mikrotransaktioner är små köp inuti ett spel. | Mikrotransaktiot ovat pieniä ostoja pelin sisällä.
+Ett rollspel (RPG) fokuserar på karaktärsutveckling och berättande. | Roolipeli (RPG) keskittyy hahmonkehitykseen ja tarinankerrontaan.
+Ett strategispel kräver planering och taktiskt tänkande. | Strategiapeli vaatii suunnittelua ja taktista ajattelua.
+Ett pusselspel utmanar spelarens problemlösningsförmåga. | Pulmapeli haastaa pelaajan ongelmanratkaisukyvyn.
+En spelplattform är hårdvaran som ett spel körs på, som en konsol eller PC. | Pelialusta on laitteisto, jolla peliä ajetaan, kuten konsoli tai PC.
+Cross-play låter spelare på olika plattformar spela tillsammans. | Ristiinpelaaminen antaa eri alustojen pelaajien pelata yhdessä.
+En dedikerad server hanterar ett multiplayerspel. | Oma palvelin hallinnoi moninpeliä.
+Renderingsavståndet avgör hur långt spelaren kan se. | Renderöintietäisyys määrittää, kuinka kauas pelaaja voi nähdä.
+Texturmappning ger ytor detaljer och färg. | Tekstuurikartoitus antaa pinnoille yksityiskohtia ja väriä.
+Polygonantalet påverkar detaljnivån hos 3D-modeller. | Polygonien määrä vaikuttaa 3D-mallien yksityiskohtaisuuteen.
+Normal mapping skapar en illusion av djup på en plan yta. | Normaalikartoitus luo illuusion syvyydestä tasaisella pinnalla.
+Ambient occlusion simulerar hur ljus blockeras av närliggande objekt. | Ympäristön okkluusio simuloi, kuinka valo estyy lähellä olevien objektien toimesta.
+Bildfrekvens (FPS) är antalet bilder som visas per sekund. | Kuvataajuus (FPS) on sekunnissa näytettävien kuvien määrä.
+En hög bildfrekvens ger en mjukare spelupplevelse. | Korkea kuvataajuus antaa sulavamman pelikokemuksen.
+Vertikal synkronisering (V-Sync) förhindrar screen tearing. | Pystysynkronointi (V-Sync) estää kuvan repeytymisen.
+En spelkontroll är en inmatningsenhet för att styra spelet. | Peliohjain on syöttölaite pelin ohjaamiseen.
+Spelutveckling är en iterativ process. | Pelinkehitys on iteratiivinen prosessi.
+En prototyp är en tidig, spelbar version av en spelidé. | Prototyyppi on varhainen, pelattava versio peli-ideasta.
+Speltestning med användare ger värdefull feedback. | Pelitestaus käyttäjien kanssa antaa arvokasta palautetta.
+En spelbalans justerar svårighetsgraden och rättvisan. | Pelitasapaino säätää vaikeustasoa ja oikeudenmukaisuutta.
+En quest är ett uppdrag som spelaren ska slutföra. | Tehtävä on missio, jonka pelaajan tulee suorittaa.
+En NPC (Non-Player Character) är en karaktär som styrs av datorn. | NPC (ei-pelaajahahmo) on hahmo, jota tietokone ohjaa.
+Dialogträd ger spelaren valmöjligheter i konversationer. | Dialogipuut antavat pelaajalle valintoja keskusteluissa.
+Ett färdighetsträd låter spelaren låsa upp nya förmågor. | Kykypuu antaa pelaajan avata uusia kykyjä.
+Crafting är att skapa nya föremål från insamlade resurser. | Käsityö on uusien esineiden luomista kerätyistä resursseista.
+En inventarielista hanterar spelarens föremål. | Inventaario hallinnoi pelaajan esineitä.
+En head-up display (HUD) visar viktig information på skärmen. | Head-up display (HUD) näyttää tärkeää tietoa näytöllä.
+En minikarta hjälper spelaren att navigera i spelvärlden. | Minikartta auttaa pelaajaa navigoimaan pelimaailmassa.
+Snabbresor (fast travel) låter spelaren snabbt förflytta sig till tidigare besökta platser. | Pikamatkustus antaa pelaajan siirtyä nopeasti aiemmin vierailtuihin paikkoihin.
+En bossfight är en utmanande strid mot en kraftfull fiende. | Pomotaistelu on haastava taistelu voimakasta vihollista vastaan.
+Ett achievementsystem belönar spelaren för att ha uppnått specifika mål. | Saavutusjärjestelmä palkitsee pelaajan tiettyjen tavoitteiden saavuttamisesta.
+En expansion lägger till nytt innehåll till ett befintligt spel. | Laajennus lisää uutta sisältöä olemassa olevaan peliin.
+Spelstreaming låter dig titta på när andra spelar spel. | Pelistriimaus antaa sinun katsoa, kun muut pelaavat pelejä.
+E-sport är tävlingsinriktat spelande på professionell nivå. | E-urheilu on kilpailullista pelaamista ammattitasolla.
+En speljam är ett evenemang där utvecklare skapar spel under en begränsad tid. | Pelijami on tapahtuma, jossa kehittäjät luovat pelejä rajoitetussa ajassa.
+Indiespel utvecklas av små, oberoende team. | Indie-pelit kehitetään pienissä, itsenäisissä tiimeissä.
+AAA-spel (Triple-A) har stora budgetar och stora utvecklingsteam. | AAA-pelit (Triple-A) ovat suurten budjettien ja suurten kehitystiimien pelejä.
+En spelrecension utvärderar ett spels kvalitet. | Peliarvostelu arvioi pelin laatua.
+Foveated rendering är en teknik som renderar det spelaren tittar på i högre upplösning. | Foveated-renderöinti on tekniikka, joka renderöi pelaajan katseen kohteen korkeammalla resoluutiolla.
+Eye tracking i VR kan användas för att styra spel och menyer. | Silmänseurantaa VR:ssä voidaan käyttää pelien ja valikoiden ohjaamiseen.
+En virtuell avatar representerar spelaren i den digitala världen. | Virtuaalinen avatar edustaa pelaajaa digitaalisessa maailmassa.
+Sociala VR-plattformar låter användare interagera med varandra i virtuella utrymmen. | Sosiaaliset VR-alustat antavat käyttäjien olla vuorovaikutuksessa toistensa kanssa virtuaalisissa tiloissa.
+VR-sjukdom kan minskas med noggrann design. | VR-pahoinvointia voidaan vähentää huolellisella suunnittelulla.
+Teleportering är en vanlig förflyttningsmetod i VR. | Teleportaatio on yleinen liikkumismenetelmä VR:ssä.
+En ljussabel i ett VR-spel kan kännas väldigt realistisk. | Valomiekka VR-pelissä voi tuntua hyvin realistiselta.
+Fysikbaserad interaktion gör VR-världar mer trovärdiga. | Fysiikkapohjainen vuorovaikutus tekee VR-maailmoista uskottavampia.
+Utveckling för VR kräver kunskap om 3D-matematik. | VR-kehitys vaatii tietoa 3D-matematiikasta.
+Optimering är avgörande för att uppnå en stabil bildfrekvens i VR. | Optimointi on ratkaisevan tärkeää vakaan kuvataajuuden saavuttamiseksi VR:ssä.
+En skybox skapar illusionen av en stor, avlägsen omgivning. | Skybox luo illuusion suuresta, kaukaisesta ympäristöstä.
+Partikelsystem används för att skapa effekter som eld, rök och explosioner. | Hiukkasjärjestelmiä käytetään luomaan tehosteita, kuten tulta, savua ja räjähdyksiä.
+Skelettanimation används för att animera karaktärer. | Luurankoanimaatiota käytetään hahmojen animointiin.
+Inverse kinematics (IK) beräknar positionen för en karaktärs leder. | Käänteinen kinematiikka (IK) laskee hahmon nivelten sijainnin.
+En spelklient är den programvara som körs på spelarens dator. | Peliasiakas on ohjelmisto, joka ajetaan pelaajan tietokoneella.
+Nätverkskod hanterar kommunikationen mellan spelare i ett multiplayerspel. | Verkkokoodi hoitaa kommunikaation pelaajien välillä moninpelissä.
+Lagkompensation är en teknik för att minska effekterna av nätverksfördröjning. | Viiveen kompensointi on tekniikka verkon viiveen vaikutusten vähentämiseksi.
+En spelserver simulerar spelvärlden och synkroniserar spelarnas tillstånd. | Pelipalvelin simuloi pelimaailmaa ja synkronoi pelaajien tilat.
+Matchmaking-systemet parar ihop spelare med varandra. | Matchmaking-järjestelmä yhdistää pelaajia toisiinsa.
+En leaderboard visar de bästa spelarnas poäng. | Tulostaulu näyttää parhaiden pelaajien pisteet.
+Spelanalys samlar in data om hur spelare interagerar med spelet. | Pelianalytiikka kerää tietoa siitä, miten pelaajat ovat vuorovaikutuksessa pelin kanssa.
+Monetarisering är processen att tjäna pengar på ett spel. | Monetisointi on prosessi, jolla pelistä ansaitaan rahaa.
+En game director har den övergripande kreativa visionen för spelet. | Peliohjaajalla on pelin yleinen luova visio.
+En teknisk konstnär bygger broar mellan konstnärer och programmerare. | Tekninen taiteilija rakentaa siltoja taiteilijoiden ja ohjelmoijien välille.
+En UI/UX-designer fokuserar på användargränssnittet och användarupplevelsen. | UI/UX-suunnittelija keskittyy käyttöliittymään ja käyttäjäkokemukseen.
+En ljudprogrammerare implementerar ljud i spelet. | Ääniohjelmoija toteuttaa äänen peliin.
+En AI-programmerare utvecklar beteendet hos datorstyrda karaktärer. | Tekoälyohjelmoija kehittää tietokoneohjattujen hahmojen käyttäytymistä.
+En grafikprogrammerare arbetar med rendering och visuella effekter. | Grafiikkaohjelmoija työskentelee renderöinnin ja visuaalisten tehosteiden parissa.
+Versionshantering, som Git, är viktigt för att hantera kodändringar. | Versiohallinta, kuten Git, on tärkeää koodimuutosten hallinnassa.
+En spelutvecklingscykel består av förproduktion, produktion och efterproduktion. | Pelinkehityssykli koostuu esituotannosta, tuotannosta ja jälkituotannosta.
+En design-dokumentation specificerar spelets design i detalj. | Suunnitteludokumentaatio määrittelee pelin suunnittelun yksityiskohtaisesti.
+Agil utveckling är en flexibel metod för projektledning. | Ketterä kehitys on joustava menetelmä projektinhallintaan.
