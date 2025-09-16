@@ -4,10 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerGuessEl = document.getElementById('player-guess');
     const nextSentenceBtn = document.getElementById('next-sentence-btn');
     const switchLanguageBtn = document.getElementById('switch-language-btn');
+    const undoBtn = document.getElementById('undo-btn');
 
     let sentences = [];
     let currentSentenceIndex = 0;
     let playerGuess = [];
+    let selectedWordElements = [];
     let translationMode = 'swe-fin'; // 'swe-fin' or 'fin-swe'
 
     // Fetch sentences from the text file
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function loadSentence() {
         playerGuess = [];
+        selectedWordElements = [];
         updatePlayerGuessDisplay();
         finnishWordsContainerEl.innerHTML = '';
 
@@ -64,6 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function selectWord(word, wordEl) {
         playerGuess.push(word);
+        selectedWordElements.push(wordEl);
         wordEl.style.visibility = 'hidden'; // Hide the word after selection
         updatePlayerGuessDisplay();
         checkGuess();
@@ -95,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function resetCurrentSentence() {
         playerGuess = [];
+        selectedWordElements = [];
         updatePlayerGuessDisplay();
         playerGuessEl.style.color = 'black';
         finnishWordsContainerEl.innerHTML = '';
@@ -119,5 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
         translationMode = translationMode === 'swe-fin' ? 'fin-swe' : 'swe-fin';
         switchLanguageBtn.textContent = translationMode === 'swe-fin' ? 'Byt till Finska-Svenska' : 'Byt till Svenska-Finska';
         loadSentence();
+    });
+
+    undoBtn.addEventListener('click', () => {
+        if (playerGuess.length > 0) {
+            playerGuess.pop();
+            const lastWordEl = selectedWordElements.pop();
+            if (lastWordEl) {
+                lastWordEl.style.visibility = 'visible';
+            }
+            updatePlayerGuessDisplay();
+        }
     });
 });
