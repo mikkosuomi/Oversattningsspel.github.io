@@ -1,10 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Bouncing flag animation
+    const flag = document.getElementById('bouncing-flag');
+    let x = Math.random() * (window.innerWidth - 100);
+    let y = Math.random() * (window.innerHeight - 60);
+    let dx = (Math.random() - 0.5) * 4; // Speed in x direction
+    let dy = (Math.random() - 0.5) * 4; // Speed in y direction
+
+    function animate() {
+        x += dx;
+        y += dy;
+
+        // Bounce off the walls
+        if (x <= 0 || x >= window.innerWidth - 100) {
+            dx = -dx;
+        }
+        if (y <= 0 || y >= window.innerHeight - 60) {
+            dy = -dy;
+        }
+
+        flag.style.left = x + 'px';
+        flag.style.top = y + 'px';
+
+        requestAnimationFrame(animate);
+    }
+
+    requestAnimationFrame(animate);
+
     const swedishSentenceEl = document.getElementById('swedish-sentence');
     const finnishWordsContainerEl = document.getElementById('finnish-words-container');
     const playerGuessEl = document.getElementById('player-guess');
     const nextSentenceBtn = document.getElementById('next-sentence-btn');
     const switchLanguageBtn = document.getElementById('switch-language-btn');
     const undoBtn = document.getElementById('undo-btn');
+    const finFlag = document.getElementById('fin-flag');
+    const sweFlag = document.getElementById('swe-flag');
 
     let sentences = [];
     let currentSentenceIndex = 0;
@@ -64,7 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
             finnishWordsContainerEl.appendChild(wordEl);
         });
 
-        nextSentenceBtn.style.display = 'none';
+        nextSentenceBtn.style.visibility = 'hidden';
+        finnishWordsContainerEl.style.pointerEvents = 'auto'; // Ensure words are clickable
     }
 
     function selectWord(word, wordEl) {
@@ -84,26 +114,49 @@ document.addEventListener('DOMContentLoaded', () => {
         const correctSentence = translationMode === 'swe-fin' ? finnish : swedish;
 
         if (playerGuess.join(' ') === correctSentence) {
-            playerGuessEl.style.color = 'green';
-            nextSentenceBtn.style.display = 'block';
+            playerGuessEl.style.color = '#4ade80'; // A nice green color
+            nextSentenceBtn.style.visibility = 'visible';
+            // Prevent further word selection after correct answer
+            finnishWordsContainerEl.style.pointerEvents = 'none';
         } else {
             const correctWords = correctSentence.split(' ');
-            const playerWords = playerGuess;
-            if (playerWords.length >= correctWords.length) {
-                 playerGuessEl.style.color = 'red';
-                 setTimeout(() => {
-                    alert('Fel, försök igen!');
-                    resetCurrentSentence();
-                }, 500);
+            // If the player's guess is the same length as the correct answer, it must be wrong.
+            if (playerGuess.length >= correctWords.length) {
+                handleWrongGuess();
             }
         }
+    }
+
+    function handleWrongGuess() {
+        // Disable clicking more words during the animation
+        finnishWordsContainerEl.style.pointerEvents = 'none';
+
+        // Flash the background red
+        document.body.classList.add('wrong-answer');
+
+        // After the animation, reset for another try
+        setTimeout(() => {
+            // Remove the background flash class and make words visible again
+            document.body.classList.remove('wrong-answer');
+            selectedWordElements.forEach(el => {
+                el.style.visibility = 'visible';
+            });
+
+            // Clear player's guess
+            playerGuess = [];
+            selectedWordElements = [];
+            updatePlayerGuessDisplay();
+
+            // Re-enable clicking
+            finnishWordsContainerEl.style.pointerEvents = 'auto';
+        }, 500); // Duration should match the CSS animation
     }
 
     function resetCurrentSentence() {
         playerGuess = [];
         selectedWordElements = [];
         updatePlayerGuessDisplay();
-        playerGuessEl.style.color = 'black';
+        playerGuessEl.style.color = '#ffffff';
         finnishWordsContainerEl.innerHTML = '';
         loadSentence(); 
     }
@@ -122,9 +175,19 @@ document.addEventListener('DOMContentLoaded', () => {
         loadSentence();
     });
 
+    function updateFlagDisplay() {
+        if (translationMode === 'swe-fin') {
+            finFlag.style.display = 'block';
+            sweFlag.style.display = 'none';
+        } else {
+            finFlag.style.display = 'none';
+            sweFlag.style.display = 'block';
+        }
+    }
+
     switchLanguageBtn.addEventListener('click', () => {
         translationMode = translationMode === 'swe-fin' ? 'fin-swe' : 'swe-fin';
-        switchLanguageBtn.textContent = translationMode === 'swe-fin' ? 'Byt till Finska-Svenska' : 'Byt till Svenska-Finska';
+        updateFlagDisplay();
         loadSentence();
     });
 

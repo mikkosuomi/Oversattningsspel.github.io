@@ -1,104 +1,90 @@
-Spelutveckling för VR är en snabbt växande bransch. | Pelinkehitys VR:lle on nopeasti kasvava ala.
-En VR-utvecklare specialiserar sig på virtuella verklighetsapplikationer. | VR-kehittäjä erikoistuu virtuaalitodellisuussovelluksiin.
-Headsetet ger en immersiv upplevelse i den virtuella världen. | Kuulokkeet tarjoavat mukaansatempaavan kokemuksen virtuaalimaailmassa.
-Rörelsesensorer spårar spelarens handrörelser. | Liiketunnistimet seuraavat pelaajan kädenliikkeitä.
-Feedback via haptik ökar känslan av närvaro. | Haptinen palaute lisää läsnäolon tunnetta.
-Vi behöver optimera spelet för att undvika illamående. | Meidän täytyy optimoida peli, jotta vältetään pahoinvointi.
-Latenstiden, eller fördröjningen, måste vara minimal. | Viiveen on oltava minimaalinen.
-FOV (Field of View) är ett viktigt designelement. | Näkökenttä (FOV) on tärkeä suunnitteluelementti.
-Stereoskopisk rendering skapar djupseende. | Stereoskooppinen renderöinti luo syvyysnäön.
-Rörelse i VR kan orsaka åksjuka. | Liike VR:ssä voi aiheuttaa matkapahoinvointia.
-Ett gränssnitt som är bekvämt för användaren är avgörande. | Käyttäjälle miellyttävä käyttöliittymä on ratkaiseva.
-Ljuddesignen bidrar till att bygga upp stämningen. | Äänisuunnittelu auttaa rakentamaan tunnelmaa.
-Att navigera i VR-miljön är en utmaning. | Navigointi VR-ympäristössä on haaste.
-Teleportering är en vanlig lösning för rörelse. | Teleporttaaminen on yleinen ratkaisu liikkumiseen.
-Vi testar användargränssnittet för att se om det är intuitivt. | Testaamme käyttöliittymää nähdäksemme, onko se intuitiivinen.
-Spelets narrativa element anpassas för VR. | Pelin narratiiviset elementit mukautetaan VR:lle.
-En bra tutorial förklarar spelets mekanik. | Hyvä opetusohjelma selittää pelimekaniikan.
-Vi använder en spelmotor som Unity eller Unreal Engine. | Käytämme pelimoottoria kuten Unity tai Unreal Engine.
-Prestanda är kritisk för en flytande upplevelse. | Suorituskyky on kriittinen sujuvan kokemuksen kannalta.
-En prototyp hjälper oss att testa nya idéer snabbt. | Prototyyppi auttaa meitä testaamaan uusia ideoita nopeasti.
-VR-spel kan vara mer fysiskt krävande. | VR-pelit voivat olla fyysisesti vaativampia.
-Avatar-design är viktigt för spelarens identifikation. | Avataarin suunnittelu on tärkeää pelaajan samastumisen kannalta.
-Handkontrollerna har inbyggda sensorer. | Käsiohjaimissa on sisäänrakennetut sensorit.
-Rumsligt ljud förbättrar rumsuppfattningen. | Tilaääni parantaa tilan havaitsemista.
-Vi skapar interaktiva objekt i den virtuella världen. | Luomme interaktiivisia esineitä virtuaalimaailmaan.
-Spelet ska ha en tydlig feedbackloop. | Pelillä on oltava selkeä palautesilmukka.
-Vi itererar på spelets design baserat på feedback. | Toistamme pelisuunnittelua palautteen perusteella.
-Användartestning är avgörande för att hitta problem. | Käyttäjätestaus on ratkaisevan tärkeää ongelmien löytämiseksi.
-En bugg i renderingen kan förstöra upplevelsen. | Renderöintivirhe voi pilata kokemuksen.
-Vi implementerar multiplayer-funktionalitet i spelet. | Toteutamme moninpeliominaisuuden peliin.
-Spelarens progression ska kännas meningsfull. | Pelaajan etenemisen tulee tuntua merkitykselliseltä.
-Vi designar spelet för olika VR-plattformar. | Suunnittelemme pelin eri VR-alustoille.
-Spelet måste vara väl optimerat för olika hårdvaror. | Pelin on oltava hyvin optimoitu eri laitteistoille.
-VR-utveckling kräver kunskap om 3D-modellering. | VR-kehitys vaatii 3D-mallinnuksen osaamista.
-Texturer och material påverkar spelets visuella utseende. | Tekstuurit ja materiaalit vaikuttavat pelin visuaaliseen ilmeeseen.
-Leveldesignen ska guida spelaren genom miljöerna. | Kenttäsuunnittelun tulee ohjata pelaajaa ympäristöjen läpi.
-En dynamisk belysning skapar en mer levande värld. | Dynaaminen valaistus luo elävämmän maailman.
-Vi arbetar med spelsystemet för att det ska vara roligt. | Työskentelemme pelijärjestelmän parissa, jotta se olisi hauska.
-En god ramfrekvens är nödvändig för en smidig upplevelse. | Hyvä ruudunpäivitysnopeus on välttämätön sujuvan kokemuksen kannalta.
-VR-spel har en hög risk för rörelsesjuka. | VR-peleissä on suuri riski liike-sairaudelle.
-Vi skapar en prototyplevel för att testa mekaniken. | Luomme prototyyppikentän mekaniikan testaamiseksi.
-Spelets gameplay-loop är kärnan i upplevelsen. | Pelin pelisilmukka on kokemuksen ydin.
-Användargränssnittet måste vara lätt att läsa i VR. | Käyttöliittymän on oltava helppo lukea VR:ssä.
-Vi designar spelet för att undvika överbelastning av minnet. | Suunnittelemme pelin välttääksemme muistin ylikuormituksen.
-VR-utveckling är en process av ständig iteration. | VR-kehitys on jatkuvan iteraation prosessi.
-Vi behöver en robust AI för våra fiender. | Tarvitsemme vankkaa tekoälyä vihollisillemme.
-Optisk spårning används för att följa användarens rörelser. | Optista seurantaa käytetään käyttäjän liikkeiden seuraamiseen.
-VR-spel kan vara bra för träning och simuleringar. | VR-pelit voivat olla hyviä harjoitteluun ja simulaatioihin.
-En bra leveldesigner skapar en intressant spelvärld. | Hyvä kenttäsuunnittelija luo mielenkiintoisen pelimaailman.
-VR-upplevelsen handlar om immersion. | VR-kokemuksessa on kyse uppoutumisesta.
-Vi arbetar med att minska fördröjningen mellan rörelse och bild. | Työskentelemme viiveen vähentämiseksi liikkeen ja kuvan välillä.
-Ett HUD (Head-Up Display) kan vara problematiskt i VR. | HUD (Head-Up Display) voi olla ongelmallinen VR:ssä.
-Vi använder en spelmotor för att rendera 3D-grafiken. | Käytämme pelimoottoria 3D-grafiikan renderöintiin.
-Spelarens handrörelser översätts till händelser i spelet. | Pelaajan kädenliikkeet käännetään tapahtumiksi pelissä.
-Vi designar ljudet för att det ska låta realistiskt. | Suunnittelemme äänen kuulostamaan realistiselta.
-VR-utveckling kräver kreativ problemlösning. | VR-kehitys vaatii luovaa ongelmanratkaisua.
-Vi fokuserar på att göra spelets kontroller intuitiva. | Keskitymme tekemään pelin ohjaimista intuitiivisia.
-Vi skapar en visuell stil som passar spelets tema. | Luomme visuaalisen tyylin, joka sopii pelin teemaan.
-Spelvärldens skala måste kännas rätt i VR. | Pelimaailman mittakaavan on tunnettava oikealta VR:ssä.
-En bra speldesigner skapar ett engagerande spel. | Hyvä pelisuunnittelija luo mukaansatempaavan pelin.
-Vi testar spelet på olika plattformar och enheter. | Testaamme peliä eri alustoilla ja laitteilla.
-Vi implementerar ett system för att spara och ladda spel. | Toteutamme järjestelmän pelien tallentamiseksi ja lataamiseksi.
-VR-upplevelsen kan vara en djupt personlig resa. | VR-kokemus voi olla syvästi henkilökohtainen matka.
-Spelmekaniken måste anpassas för VR. | Pelimekaniikka on mukautettava VR:lle.
-Vi använder sig av tekniker för att minska rörelsesjuka. | Käytämme tekniikoita liikesairauden vähentämiseksi.
-Användargränssnittet ska vara minimalt och integrerat. | Käyttöliittymän tulee olla minimaalinen ja integroitu.
-Vi arbetar med spelets ljussättning för att skapa stämning. | Työskentelemme pelin valaistuksen parissa luodaksemme tunnelmaa.
-En VR-utvecklare måste tänka på prestanda konstant. | VR-kehittäjän on ajateltava suorituskykyä jatkuvasti.
-Speldesignen måste ta hänsyn till spelarens rörelse. | Pelisuunnittelun on otettava huomioon pelaajan liike.
-Vi skapar en känsla av närvaro genom interaktion. | Luomme läsnäolon tunteen vuorovaikutuksen kautta.
-VR-utveckling är ett multidisciplinärt fält. | VR-kehitys on monialainen kenttä.
-Spelarens synfält är en avgörande faktor. | Pelaajan näkökenttä on ratkaiseva tekijä.
-Vi implementerar spelmekanik som är unik för VR. | Toteutamme pelimekaniikan, joka on ainutlaatuinen VR:lle.
-Spelet ska ge en stark känsla av immersion. | Pelin tulee antaa vahva immersio-tunne.
-Vi använder optimerade 3D-modeller för att spara prestanda. | Käytämme optimoituja 3D-malleja suorituskyvyn säästämiseksi.
-En VR-designer måste förstå spelarens upplevelse. | VR-suunnittelijan on ymmärrettävä pelaajan kokemus.
-Vi testar spelet för att se om det är bekvämt att spela. | Testaamme peliä nähdäksemme, onko se mukava pelata.
-Spelet måste vara väl optimerat för att undvika frame drops. | Pelin on oltava hyvin optimoitu, jotta vältetään ruutunopeuden pudotukset.
-VR-utveckling handlar om att skapa illusioner. | VR-kehitys on illuusioiden luomista.
-Vi skapar en visuell stil som passar för VR. | Luomme visuaalisen tyylin, joka sopii VR:lle.
-Spelaren ska kunna interagera med spelvärlden på ett naturligt sätt. | Pelaajan tulee pystyä vuorovaikuttamaan pelimaailman kanssa luonnollisella tavalla.
-Vi implementerar en handspårningsmekanik. | Toteutamme kädenseurantamekaniikan.
-Spelet ska ge en känsla av djup och rymd. | Pelin tulee antaa syvyyden ja tilan tunne.
-Vi arbetar med ljudbilden för att skapa en realistisk miljö. | Työskentelemme äänimaailman parissa luodaksemme realistisen ympäristön.
-VR-utveckling är en spännande ny gräns. | VR-kehitys on jännittävä uusi rajapinta.
-En bra speldesigner skapar en oförglömlig upplevelse. | Hyvä pelisuunnittelija luo unohtumattoman kokemuksen.
-Vi testar spelet för att hitta alla buggar. | Testaamme peliä löytääksemme kaikki virheet.
-VR-spel kan vara terapeutiska och pedagogiska. | VR-pelit voivat olla terapeuttisia ja pedagogisia.
-Spelarens rörelse i den virtuella världen är en utmaning. | Pelaajan liike virtuaalimaailmassa on haaste.
-Vi skapar en bra balans mellan grafik och prestanda. | Luomme hyvän tasapainon grafiikan ja suorituskyvyn välille.
-En VR-utvecklare måste ha en god förståelse för hårdvara. | VR-kehittäjällä on oltava hyvä ymmärrys laitteistosta.
-Vi fokuserar på att göra spelet så bekvämt som möjligt. | Keskitymme tekemään pelistä mahdollisimman mukavan.
-Spelets gameplay-loop är centralt för retention. | Pelin pelisilmukka on keskeinen säilyttämiselle.
-Vi skapar en design som är lätt för nya spelare att förstå. | Luomme suunnittelun, joka on helppo uusien pelaajien ymmärtää.
-VR-spel kan vara ett bra sätt att berättar historier. | VR-pelit voivat olla hyvä tapa kertoa tarinoita.
-Spelaren måste kunna lita på spelets kontroller. | Pelaajan on voitava luottaa pelin ohjaimiin.
-Vi arbetar med att förbättra spelets visuell feedback. | Työskentelemme parantaaksemme pelin visuaalista palautetta.
-En bra leveldesigner skapar en känsla av utforskning. | Hyvä kenttäsuunnittelija luo tutkimisen tunteen.
-VR-utveckling är en konstant inlärningsprocess. | VR-kehitys on jatkuva oppimisprosessi.
-Vi skapar interaktiva miljöer som reagerar på spelaren. | Luomme interaktiivisia ympäristöjä, jotka reagoivat pelaajaan.
-Spelaren ska känna sig som en del av spelvärlden. | Pelaajan tulee tuntea olevansa osa pelimaailmaa.
-Vi testar spelet för att se om det finns några prestandaproblem. | Testaamme peliä nähdäksemme, onko siinä suorituskykyongelmia.
-En bra speldesigner skapar ett spel som är roligt att spela om och om igen. | Hyvä pelisuunnittelija luo pelin, jota on hauska pelata uudestaan ja uudestaan.
+Användargränssnittet måste vara intuitivt för nya spelare. | Käyttöliittymän on oltava intuitiivinen uusille pelaajille.
+Vi måste förbättra användarupplevelsen baserat på feedback. | Meidän on parannettava käyttäjäkokemusta palautteen perusteella.
+Knapparna i menyn är för små för att lätt kunna klickas på. | Valikon painikkeet ovat liian pieniä, jotta niitä olisi helppo napsauttaa.
+Head-up displayen (HUD) visar spelarens hälsa och ammunition. | HUD-näyttö näyttää pelaajan terveyden ja ammukset.
+Ikonerna bör vara tydliga och lätta att förstå. | Kuvakkeiden tulisi olla selkeitä ja helposti ymmärrettäviä.
+Vi A/B-testar två olika versioner av startmenyn. | A/B-testaamme kahta eri versiota päävalikosta.
+En bra handledning (tutorial) är avgörande för spelarens första intryck. | Hyvä opetusohjelma (tutorial) on ratkaiseva pelaajan ensivaikutelmalle.
+Färgpaletten i gränssnittet påverkar spelets atmosfär. | Käyttöliittymän väripaletti vaikuttaa pelin ilmapiiriin.
+Vi använder wireframes för att planera layouten av gränssnittet. | Käytämme rautalankamalleja käyttöliittymän asettelun suunnitteluun.
+Denna 3D-modell har för många polygoner och måste optimeras. | Tässä 3D-mallissa on liikaa polygoneja ja se on optimoitava.
+Vi behöver skapa en högupplöst textur för karaktärens rustning. | Meidän on luotava korkearesoluutioinen tekstuuri hahmon panssariin.
+Ljussättningen i denna scen är för mörk. | Tämän kohtauksen valaistus on liian tumma.
+Rigging är processen att skapa ett skelett för en 3D-modell. | Riggaus on prosessi, jossa 3D-mallille luodaan luuranko.
+Normal maps simulerar detaljer på en yta utan att öka antalet polygoner. | Normaalikartat simuloivat yksityiskohtia pinnalla lisäämättä polygonien määrää.
+Rendering av en enda bildruta kan ta flera minuter. | Yhden kuvan renderöinti voi kestää useita minuutteja.
+Animatören arbetar med att ge karaktärerna liv. | Animaattori työskentelee hahmojen herättämiseksi eloon.
+Partikelsystem används för att skapa effekter som eld och rök. | Hiukkasjärjestelmiä käytetään efektien, kuten tulen ja savun, luomiseen.
+Skulptering är en teknik för att skapa organiska 3D-modeller. | Kuvanveisto on tekniikka orgaanisten 3D-mallien luomiseen.
+Vi använder en populär spelmotor för att bygga vårt spel. | Käytämme suosittua pelimoottoria pelimme rakentamiseen.
+Fysikmotorn simulerar gravitation och kollisioner. | Fysiikkamoottori simuloi painovoimaa ja törmäyksiä.
+Detta skript styr fiendens artificiella intelligens (AI). | Tämä skripti ohjaa vihollisen tekoälyä (AI).
+Vi måste kompilera koden för att se ändringarna i spelet. | Meidän on käännettävä koodi nähdäksemme muutokset pelissä.
+En bugg i koden orsakar att spelet kraschar. | Koodissa oleva bugi aiheuttaa pelin kaatumisen.
+Versionshantering är viktigt när flera utvecklare arbetar tillsammans. | Versionhallinta on tärkeää, kun useat kehittäjät työskentelevät yhdessä.
+Ett Application Programming Interface (API) låter olika system kommunicera. | Ohjelmointirajapinta (API) mahdollistaa eri järjestelmien kommunikoinnin.
+Prefabs är återanvändbara spelobjekt i spelmotorn. | Prefabit ovat uudelleenkäytettäviä peliobjekteja pelimoottorissa.
+Vi måste optimera spelets prestanda för att uppnå en stabil bildfrekvens. | Meidän on optimoitava pelin suorituskyky saavuttaaksemme vakaan kuvataajuuden.
+Debugging är processen att hitta och åtgärda fel i koden. | Debuggaus on prosessi, jossa etsitään ja korjataan virheitä koodissa.
+Spelets kärnmekanik är att lösa pussel. | Pelin ydinmekaniikka on pulmien ratkaiseminen.
+Balansering av spelmekaniken är en iterativ process. | Pelimekaniikan tasapainottaminen on iteratiivinen prosessi.
+Denna nivå är designad för att lära spelaren en ny förmåga. | Tämä taso on suunniteltu opettamaan pelaajalle uusi kyky.
+Power-ups ger spelaren tillfälliga fördelar. | Voimaesineet antavat pelaajalle väliaikaisia etuja.
+NPC:n (Non-Player Character) ger spelaren uppdrag och information. | NPC (ei-pelaajahahmo) antaa pelaajalle tehtäviä ja tietoa.
+Svårighetskurvan måste vara utmanande men inte frustrerande. | Vaikeuskäyrän on oltava haastava, mutta ei turhauttava.
+Vi använder ett färdighetsträd för karaktärsutveckling. | Käytämme kykypuuta hahmonkehitykseen.
+Ett väl utformat uppdrag (quest) berättar en historia. | Hyvin suunniteltu tehtävä (quest) kertoo tarinan.
+VR-headsetet spårar användarens huvudrörelser. | VR-lasit seuraavat käyttäjän pään liikkeitä.
+Immersion, eller inlevelse, är nyckeln till en bra VR-upplevelse. | Immersio eli uppoutuminen on avain hyvään VR-kokemukseen.
+Låg latens är avgörande för att undvika åksjuka i VR. | Matala latenssi on ratkaisevan tärkeää liikesairauden välttämiseksi VR:ssä.
+Kontrollerna används för att interagera med objekt i VR. | Ohjaimia käytetään vuorovaikutukseen objektien kanssa VR:ssä.
+Ögonspårning kan användas för att förbättra grafikprestandan. | Silmänseurantaa voidaan käyttää grafiikan suorituskyvyn parantamiseen.
+Vi utvecklar en social VR-plattform för samarbete. | Kehitämme sosiaalista VR-alustaa yhteistyöhön.
+För att minska risken för åksjuka använder vi "tunnel vision" vid snabba rörelser. | Vähentääksemme liikesairauden riskiä käytämme "putkinäköä" nopeissa liikkeissä.
+Den virtuella avataren representerar användaren i den digitala världen. | Virtuaalinen avatar edustaa käyttäjää digitaalisessa maailmassa.
+Ljuddesignen är viktig för att skapa en trovärdig virtuell miljö. | Äänisuunnittelu on tärkeää uskottavan virtuaalisen ympäristön luomiseksi.
+Gränssnittet i VR måste vara designat för tredimensionellt utrymme. | VR:n käyttöliittymän on oltava suunniteltu kolmiulotteiseen tilaan.
+Kalibrering av VR-systemet är nödvändigt för en korrekt spårning. | VR-järjestelmän kalibrointi on välttämätöntä tarkan seurannan varmistamiseksi.
+Denna applikation använder handspårning istället för traditionella kontroller. | Tämä sovellus käyttää käsien seurantaa perinteisten ohjainten sijaan.
+Fotorealistisk grafik kan öka känslan av närvaro. | Fotorealistinen grafiikka voi lisätä läsnäolon tunnetta.
+En virtuell prototyp låter oss testa designen innan fysisk tillverkning. | Virtuaalinen prototyyppi antaa meidän testata suunnittelua ennen fyysistä valmistusta.
+Utveckling för VR kräver kunskap om mänsklig perception. | VR-kehitys vaatii tietoa ihmisen havaintokyvystä.
+Ljuddesignen förstärker den känslomässiga upplevelsen. | Äänisuunnittelu vahvistaa emotionaalista kokemusta.
+Vi behöver en adaptiv ljudspår som ändras baserat på spelets händelser. | Tarvitsemme mukautuvan ääniraidan, joka muuttuu pelin tapahtumien perusteella.
+Ljudeffekterna för fotsteg är inte synkroniserade med animationen. | Askelten äänitehosteet eivät ole synkronissa animaation kanssa.
+Röstskådespelarna har gjort ett fantastiskt jobb med dialogen. | Ääninäyttelijät ovat tehneet loistavaa työtä dialogin parissa.
+Positionellt ljud är viktigt för att veta varifrån fiender kommer. | Paikallinen ääni on tärkeä tietääkseen, mistä viholliset tulevat.
+Musiken ska skapa en känsla av äventyr. | Musiikin tulee luoda seikkailun tunnetta.
+Vi licensierar ett musikstycke för spelets trailer. | Lisensioimme musiikkikappaleen pelin traileria varten.
+Ljudmixningen balanserar dialog, musik och effekter. | Äänimiksaus tasapainottaa dialogin, musiikin ja tehosteet.
+En foley-artist skapar anpassade ljudeffekter. | Foley-artisti luo räätälöityjä äänitehosteita.
+Tystnad kan vara ett kraftfullt verktyg i ljuddesign. | Hiljaisuus voi olla voimakas työkalu äänisuunnittelussa.
+Playtesting hjälper oss att identifiera problem med spelbarheten. | Pelitestaus auttaa meitä tunnistamaan pelattavuusongelmia.
+Vi har hittat en kritisk bugg som måste fixas omedelbart. | Olemme löytäneet kriittisen bugin, joka on korjattava välittömästi.
+Kvalitetssäkringsteamet testar spelet på olika plattformar. | Laadunvarmistustiimi testaa peliä eri alustoilla.
+Testaren måste skriva en detaljerad rapport om felet. | Testaajan on kirjoitettava yksityiskohtainen raportti virheestä.
+Alfatestning utförs internt av utvecklingsteamet. | Alfatestauksen suorittaa sisäisesti kehitystiimi.
+Betatestning involverar en större grupp externa spelare. | Betatestaukseen osallistuu suurempi joukko ulkopuolisia pelaajia.
+Ett "regressionstest" säkerställer att nya ändringar inte har skapat nya buggar. | Regressiotesti varmistaa, että uudet muutokset eivät ole luoneet uusia bugeja.
+Användbarhetstestning fokuserar på hur enkelt det är att använda gränssnittet. | Käytettävyystestaus keskittyy siihen, kuinka helppoa käyttöliittymää on käyttää.
+Vi behöver samla in data om hur spelare navigerar i nivåerna. | Meidän on kerättävä tietoa siitä, miten pelaajat navigoivat tasoilla.
+Feedback från testare är ovärderlig för att förbättra spelet. | Testaajien palaute on korvaamatonta pelin parantamiseksi.
+Spelets "assets" inkluderar alla modeller, texturer och ljudfiler. | Pelin "assetit" sisältävät kaikki mallit, tekstuurit ja äänitiedostot.
+En storyboard visualiserar spelets mellansekvenser. | Kuvakäsikirjoitus visualisoi pelin välianimaatiot.
+Monetarisering är strategin för hur spelet ska generera intäkter. | Monetisointi on strategia sille, miten peli tuottaa tuloja.
+Vi siktar på att lansera spelet på flera plattformar samtidigt. | Tavoitteenamme on julkaista peli usealla alustalla samanaikaisesti.
+Denna "build" av spelet är inte stabil nog för demonstration. | Tämä pelin "build" ei ole tarpeeksi vakaa esittelyä varten.
+Game Design Document (GDD) beskriver alla aspekter av spelet. | Pelisuunnitteluasiakirja (GDD) kuvaa kaikki pelin osa-alueet.
+Vår målgrupp är casual gamers. | Kohderyhmämme ovat satunnaispelaajat.
+Spelet är för närvarande i pre-production-fasen. | Peli on tällä hetkellä esituotantovaiheessa.
+En "patch" släpps för att fixa buggar efter lanseringen. | "Patch" julkaistaan korjaamaan bugeja julkaisun jälkeen.
+Procedurell generering skapar innehåll slumpmässigt. | Proseduraalinen generointi luo sisältöä satunnaisesti.
+Spelet renderas i realtid. | Peli renderöidään reaaliajassa.
+Spelets fysik känns inte realistisk. | Pelin fysiikka ei tunnu realistiselta.
+Vi behöver fler "waypoints" för att guida AI-karaktärerna. | Tarvitsemme lisää "reittipisteitä" ohjaamaan tekoälyhahmoja.
+En "skybox" används för att skapa illusionen av en horisont. | "Skyboxia" käytetään horisontin illuusion luomiseen.
+Spelet har en icke-linjär berättelse. | Pelissä on epälineaarinen tarina.
+Vi måste hantera minnesläckor för att undvika prestandaproblem. | Meidän on hallittava muistivuotoja välttääksemme suorituskykyongelmia.
+Detta verktyg är utvecklat internt för att underlätta level design. | Tämä työkalu on kehitetty sisäisesti helpottamaan tasosuunnittelua.
+Slutmålet är att skapa en rolig och engagerande spelupplevelse. | Lopputavoitteena on luoda hauska ja mukaansatempaava pelikokemus.
 Takarivi Games | Takarivi Games

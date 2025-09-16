@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Översättningsspel</title>
+    <title>Översättningsspel.</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Översättningsspel</h1>
+    <h1>Översättningsspel.</h1>
     <div id="game-container">
         <div id="swedish-sentence-container">
             <p id="swedish-sentence"></p>
@@ -18,10 +18,28 @@
         <div id="player-guess-container">
             <p id="player-guess"></p>
         </div>
-        <button id="next-sentence-btn">Nästa mening</button>
-        <button id="switch-language-btn">Byt till Finska-Svenska</button>
-        <button id="undo-btn">Ångra</button>
+        <div id="button-controls">
+            <button id="next-sentence-btn">Nästa</button>
+            <button id="switch-language-btn">
+                <svg id="fin-flag" class="flag-icon" viewBox="0 0 18 11">
+                    <rect width="18" height="11" fill="#fff"/>
+                    <rect width="18" height="3" y="4" fill="#003580"/>
+                    <rect width="3" height="11" x="5" fill="#003580"/>
+                </svg>
+                <svg id="swe-flag" class="flag-icon" viewBox="0 0 16 10">
+                    <rect width="16" height="10" fill="#006aa7"/>
+                    <rect width="16" height="2" y="4" fill="#fecc00"/>
+                    <rect width="2" height="10" x="5" fill="#fecc00"/>
+                </svg>
+            </button>
+            <button id="undo-btn">Ångra</button>
+        </div>
     </div>
     <script src="script.js"></script>
+    <svg id="bouncing-flag" class="flag-icon" viewBox="0 0 16 10">
+        <rect width="16" height="10" fill="#006aa7"/>
+        <rect width="16" height="2" y="4" fill="#fecc00"/>
+        <rect width="2" height="10" x="5" fill="#fecc00"/>
+    </svg>
 </body>
 </html>
