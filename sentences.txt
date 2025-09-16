@@ -1,0 +1,10 @@
+Virtuell verklighet (VR) skapar en helt uppslukande upplevelse. | Virtuaalitodellisuus (VR) luo täysin immersiivisen kokemuksen.
+Förstärkt verklighet (AR) lägger digital information över den verkliga världen. | Lisätty todellisuus (AR) lisää digitaalista tietoa todellisen maailman päälle.
+En mjukvaruutvecklare skriver och underhåller kod. | Ohjelmistokehittäjä kirjoittaa ja ylläpitää koodia.
+Användargränssnittet (UI) är avgörande för en bra användarupplevelse (UX). | Käyttöliittymä (UI) on ratkaiseva hyvän käyttäjäkokemuksen (UX) kannalta.
+Ett API (Application Programming Interface) låter olika program kommunicera. | API (sovellusliittymä) antaa eri ohjelmien kommunikoida keskenään.
+Molntjänster erbjuder skalbar datorkraft och lagring. | Pilvipalvelut tarjoavat skaalautuvaa laskentatehoa ja tallennustilaa.
+Maskininlärning är en gren av artificiell intelligens. | Koneoppiminen on tekoälyn haara.
+En spelmotor tillhandahåller de grundläggande funktionerna för spelutveckling. | Pelimoottori tarjoaa perustoiminnot pelinkehitykseen.
+3D-modellering används för att skapa tredimensionella objekt. | 3D-mallinnusta käytetään kolmiulotteisten objektien luomiseen.
+Haptisk feedback simulerar känseln av beröring. | Haptinen palaute simuloi kosketuksen tunnetta.
