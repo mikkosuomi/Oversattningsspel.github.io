@@ -1,88 +1,104 @@
-Strålspårning är en renderingsteknik för att skapa realistiska bilder. | Säteenseuranta on renderöintitekniikka realististen kuvien luomiseen.
-En fysikmotor simulerar fysiska lagar i ett spel. | Fysiikkamoottori simuloi fysiikan lakeja pelissä.
-Speldesignern skapar reglerna och strukturen i ett spel. | Pelisuunnittelija luo pelin säännöt ja rakenteen.
-En leveldesigner bygger spelvärldens miljöer. | Kenttäsuunnittelija rakentaa pelimaailman ympäristöjä.
-AI-fiender kan använda komplexa strategier för att utmana spelaren. | Tekoälyviholliset voivat käyttää monimutkaisia strategioita haastaakseen pelaajan.
-Procedurell generering skapar innehåll algoritmiskt. | Proseduraalinen generointi luo sisältöä algoritmisesti.
-Ett VR-headset spårar huvudets rörelser för att ändra synfältet. | VR-lasit seuraavat pään liikkeitä muuttaakseen näkökenttää.
-Rörelsekontroller låter spelaren interagera med den virtuella världen med händerna. | Liikeohjaimet antavat pelaajan olla vuorovaikutuksessa virtuaalimaailman kanssa käsillään.
-Rumsskalig VR låter dig gå runt i ett fysiskt utrymme. | Huoneenlaajuinen VR antaa sinun kävellä fyysisessä tilassa.
-Latenstid i VR kan orsaka åksjuka. | Viive VR:ssä voi aiheuttaa matkapahoinvointia.
-En spelproducent övervakar utvecklingsprocessen. | Pelituottaja valvoo kehitysprosessia.
-En konceptkonstnär skapar den visuella stilen för ett spel. | Konseptitaiteilija luo pelin visuaalisen tyylin.
-Ljuddesign är viktigt för att skapa en stämningsfull atmosfär. | Äänisuunnittelu on tärkeää tunnelmallisen ilmapiirin luomiseksi.
-Ett spelmanus innehåller dialog och berättelsens händelser. | Pelikäsikirjoitus sisältää dialogin ja tarinan tapahtumat.
-Kvalitetssäkring (QA) innebär att testa spelet för att hitta buggar. | Laadunvarmistus (QA) tarkoittaa pelin testaamista bugien löytämiseksi.
-En bugg är ett fel i programkoden. | Bugi on virhe ohjelmakoodissa.
-En patch är en uppdatering som fixar buggar eller lägger till innehåll. | Korjaustiedosto on päivitys, joka korjaa bugeja tai lisää sisältöä.
-Early access låter spelare köpa och spela ett spel innan det är färdigt. | Early access antaa pelaajien ostaa ja pelata peliä ennen sen valmistumista.
-Mikrotransaktioner är små köp inuti ett spel. | Mikrotransaktiot ovat pieniä ostoja pelin sisällä.
-Ett rollspel (RPG) fokuserar på karaktärsutveckling och berättande. | Roolipeli (RPG) keskittyy hahmonkehitykseen ja tarinankerrontaan.
-Ett strategispel kräver planering och taktiskt tänkande. | Strategiapeli vaatii suunnittelua ja taktista ajattelua.
-Ett pusselspel utmanar spelarens problemlösningsförmåga. | Pulmapeli haastaa pelaajan ongelmanratkaisukyvyn.
-En spelplattform är hårdvaran som ett spel körs på, som en konsol eller PC. | Pelialusta on laitteisto, jolla peliä ajetaan, kuten konsoli tai PC.
-Cross-play låter spelare på olika plattformar spela tillsammans. | Ristiinpelaaminen antaa eri alustojen pelaajien pelata yhdessä.
-En dedikerad server hanterar ett multiplayerspel. | Oma palvelin hallinnoi moninpeliä.
-Renderingsavståndet avgör hur långt spelaren kan se. | Renderöintietäisyys määrittää, kuinka kauas pelaaja voi nähdä.
-Texturmappning ger ytor detaljer och färg. | Tekstuurikartoitus antaa pinnoille yksityiskohtia ja väriä.
-Polygonantalet påverkar detaljnivån hos 3D-modeller. | Polygonien määrä vaikuttaa 3D-mallien yksityiskohtaisuuteen.
-Normal mapping skapar en illusion av djup på en plan yta. | Normaalikartoitus luo illuusion syvyydestä tasaisella pinnalla.
-Ambient occlusion simulerar hur ljus blockeras av närliggande objekt. | Ympäristön okkluusio simuloi, kuinka valo estyy lähellä olevien objektien toimesta.
-Bildfrekvens (FPS) är antalet bilder som visas per sekund. | Kuvataajuus (FPS) on sekunnissa näytettävien kuvien määrä.
-En hög bildfrekvens ger en mjukare spelupplevelse. | Korkea kuvataajuus antaa sulavamman pelikokemuksen.
-Vertikal synkronisering (V-Sync) förhindrar screen tearing. | Pystysynkronointi (V-Sync) estää kuvan repeytymisen.
-En spelkontroll är en inmatningsenhet för att styra spelet. | Peliohjain on syöttölaite pelin ohjaamiseen.
-Spelutveckling är en iterativ process. | Pelinkehitys on iteratiivinen prosessi.
-En prototyp är en tidig, spelbar version av en spelidé. | Prototyyppi on varhainen, pelattava versio peli-ideasta.
-Speltestning med användare ger värdefull feedback. | Pelitestaus käyttäjien kanssa antaa arvokasta palautetta.
-En spelbalans justerar svårighetsgraden och rättvisan. | Pelitasapaino säätää vaikeustasoa ja oikeudenmukaisuutta.
-En quest är ett uppdrag som spelaren ska slutföra. | Tehtävä on missio, jonka pelaajan tulee suorittaa.
-En NPC (Non-Player Character) är en karaktär som styrs av datorn. | NPC (ei-pelaajahahmo) on hahmo, jota tietokone ohjaa.
-Dialogträd ger spelaren valmöjligheter i konversationer. | Dialogipuut antavat pelaajalle valintoja keskusteluissa.
-Ett färdighetsträd låter spelaren låsa upp nya förmågor. | Kykypuu antaa pelaajan avata uusia kykyjä.
-Crafting är att skapa nya föremål från insamlade resurser. | Käsityö on uusien esineiden luomista kerätyistä resursseista.
-En inventarielista hanterar spelarens föremål. | Inventaario hallinnoi pelaajan esineitä.
-En head-up display (HUD) visar viktig information på skärmen. | Head-up display (HUD) näyttää tärkeää tietoa näytöllä.
-En minikarta hjälper spelaren att navigera i spelvärlden. | Minikartta auttaa pelaajaa navigoimaan pelimaailmassa.
-Snabbresor (fast travel) låter spelaren snabbt förflytta sig till tidigare besökta platser. | Pikamatkustus antaa pelaajan siirtyä nopeasti aiemmin vierailtuihin paikkoihin.
-En bossfight är en utmanande strid mot en kraftfull fiende. | Pomotaistelu on haastava taistelu voimakasta vihollista vastaan.
-Ett achievementsystem belönar spelaren för att ha uppnått specifika mål. | Saavutusjärjestelmä palkitsee pelaajan tiettyjen tavoitteiden saavuttamisesta.
-En expansion lägger till nytt innehåll till ett befintligt spel. | Laajennus lisää uutta sisältöä olemassa olevaan peliin.
-Spelstreaming låter dig titta på när andra spelar spel. | Pelistriimaus antaa sinun katsoa, kun muut pelaavat pelejä.
-E-sport är tävlingsinriktat spelande på professionell nivå. | E-urheilu on kilpailullista pelaamista ammattitasolla.
-En speljam är ett evenemang där utvecklare skapar spel under en begränsad tid. | Pelijami on tapahtuma, jossa kehittäjät luovat pelejä rajoitetussa ajassa.
-Indiespel utvecklas av små, oberoende team. | Indie-pelit kehitetään pienissä, itsenäisissä tiimeissä.
-AAA-spel (Triple-A) har stora budgetar och stora utvecklingsteam. | AAA-pelit (Triple-A) ovat suurten budjettien ja suurten kehitystiimien pelejä.
-En spelrecension utvärderar ett spels kvalitet. | Peliarvostelu arvioi pelin laatua.
-Foveated rendering är en teknik som renderar det spelaren tittar på i högre upplösning. | Foveated-renderöinti on tekniikka, joka renderöi pelaajan katseen kohteen korkeammalla resoluutiolla.
-Eye tracking i VR kan användas för att styra spel och menyer. | Silmänseurantaa VR:ssä voidaan käyttää pelien ja valikoiden ohjaamiseen.
-En virtuell avatar representerar spelaren i den digitala världen. | Virtuaalinen avatar edustaa pelaajaa digitaalisessa maailmassa.
-Sociala VR-plattformar låter användare interagera med varandra i virtuella utrymmen. | Sosiaaliset VR-alustat antavat käyttäjien olla vuorovaikutuksessa toistensa kanssa virtuaalisissa tiloissa.
-VR-sjukdom kan minskas med noggrann design. | VR-pahoinvointia voidaan vähentää huolellisella suunnittelulla.
-Teleportering är en vanlig förflyttningsmetod i VR. | Teleportaatio on yleinen liikkumismenetelmä VR:ssä.
-En ljussabel i ett VR-spel kan kännas väldigt realistisk. | Valomiekka VR-pelissä voi tuntua hyvin realistiselta.
-Fysikbaserad interaktion gör VR-världar mer trovärdiga. | Fysiikkapohjainen vuorovaikutus tekee VR-maailmoista uskottavampia.
-Utveckling för VR kräver kunskap om 3D-matematik. | VR-kehitys vaatii tietoa 3D-matematiikasta.
-Optimering är avgörande för att uppnå en stabil bildfrekvens i VR. | Optimointi on ratkaisevan tärkeää vakaan kuvataajuuden saavuttamiseksi VR:ssä.
-En skybox skapar illusionen av en stor, avlägsen omgivning. | Skybox luo illuusion suuresta, kaukaisesta ympäristöstä.
-Partikelsystem används för att skapa effekter som eld, rök och explosioner. | Hiukkasjärjestelmiä käytetään luomaan tehosteita, kuten tulta, savua ja räjähdyksiä.
-Skelettanimation används för att animera karaktärer. | Luurankoanimaatiota käytetään hahmojen animointiin.
-Inverse kinematics (IK) beräknar positionen för en karaktärs leder. | Käänteinen kinematiikka (IK) laskee hahmon nivelten sijainnin.
-En spelklient är den programvara som körs på spelarens dator. | Peliasiakas on ohjelmisto, joka ajetaan pelaajan tietokoneella.
-Nätverkskod hanterar kommunikationen mellan spelare i ett multiplayerspel. | Verkkokoodi hoitaa kommunikaation pelaajien välillä moninpelissä.
-Lagkompensation är en teknik för att minska effekterna av nätverksfördröjning. | Viiveen kompensointi on tekniikka verkon viiveen vaikutusten vähentämiseksi.
-En spelserver simulerar spelvärlden och synkroniserar spelarnas tillstånd. | Pelipalvelin simuloi pelimaailmaa ja synkronoi pelaajien tilat.
-Matchmaking-systemet parar ihop spelare med varandra. | Matchmaking-järjestelmä yhdistää pelaajia toisiinsa.
-En leaderboard visar de bästa spelarnas poäng. | Tulostaulu näyttää parhaiden pelaajien pisteet.
-Spelanalys samlar in data om hur spelare interagerar med spelet. | Pelianalytiikka kerää tietoa siitä, miten pelaajat ovat vuorovaikutuksessa pelin kanssa.
-Monetarisering är processen att tjäna pengar på ett spel. | Monetisointi on prosessi, jolla pelistä ansaitaan rahaa.
-En game director har den övergripande kreativa visionen för spelet. | Peliohjaajalla on pelin yleinen luova visio.
-En teknisk konstnär bygger broar mellan konstnärer och programmerare. | Tekninen taiteilija rakentaa siltoja taiteilijoiden ja ohjelmoijien välille.
-En UI/UX-designer fokuserar på användargränssnittet och användarupplevelsen. | UI/UX-suunnittelija keskittyy käyttöliittymään ja käyttäjäkokemukseen.
-En ljudprogrammerare implementerar ljud i spelet. | Ääniohjelmoija toteuttaa äänen peliin.
-En AI-programmerare utvecklar beteendet hos datorstyrda karaktärer. | Tekoälyohjelmoija kehittää tietokoneohjattujen hahmojen käyttäytymistä.
-En grafikprogrammerare arbetar med rendering och visuella effekter. | Grafiikkaohjelmoija työskentelee renderöinnin ja visuaalisten tehosteiden parissa.
-Versionshantering, som Git, är viktigt för att hantera kodändringar. | Versiohallinta, kuten Git, on tärkeää koodimuutosten hallinnassa.
-En spelutvecklingscykel består av förproduktion, produktion och efterproduktion. | Pelinkehityssykli koostuu esituotannosta, tuotannosta ja jälkituotannosta.
-En design-dokumentation specificerar spelets design i detalj. | Suunnitteludokumentaatio määrittelee pelin suunnittelun yksityiskohtaisesti.
-Agil utveckling är en flexibel metod för projektledning. | Ketterä kehitys on joustava menetelmä projektinhallintaan.
+Spelutveckling för VR är en snabbt växande bransch. | Pelinkehitys VR:lle on nopeasti kasvava ala.
+En VR-utvecklare specialiserar sig på virtuella verklighetsapplikationer. | VR-kehittäjä erikoistuu virtuaalitodellisuussovelluksiin.
+Headsetet ger en immersiv upplevelse i den virtuella världen. | Kuulokkeet tarjoavat mukaansatempaavan kokemuksen virtuaalimaailmassa.
+Rörelsesensorer spårar spelarens handrörelser. | Liiketunnistimet seuraavat pelaajan kädenliikkeitä.
+Feedback via haptik ökar känslan av närvaro. | Haptinen palaute lisää läsnäolon tunnetta.
+Vi behöver optimera spelet för att undvika illamående. | Meidän täytyy optimoida peli, jotta vältetään pahoinvointi.
+Latenstiden, eller fördröjningen, måste vara minimal. | Viiveen on oltava minimaalinen.
+FOV (Field of View) är ett viktigt designelement. | Näkökenttä (FOV) on tärkeä suunnitteluelementti.
+Stereoskopisk rendering skapar djupseende. | Stereoskooppinen renderöinti luo syvyysnäön.
+Rörelse i VR kan orsaka åksjuka. | Liike VR:ssä voi aiheuttaa matkapahoinvointia.
+Ett gränssnitt som är bekvämt för användaren är avgörande. | Käyttäjälle miellyttävä käyttöliittymä on ratkaiseva.
+Ljuddesignen bidrar till att bygga upp stämningen. | Äänisuunnittelu auttaa rakentamaan tunnelmaa.
+Att navigera i VR-miljön är en utmaning. | Navigointi VR-ympäristössä on haaste.
+Teleportering är en vanlig lösning för rörelse. | Teleporttaaminen on yleinen ratkaisu liikkumiseen.
+Vi testar användargränssnittet för att se om det är intuitivt. | Testaamme käyttöliittymää nähdäksemme, onko se intuitiivinen.
+Spelets narrativa element anpassas för VR. | Pelin narratiiviset elementit mukautetaan VR:lle.
+En bra tutorial förklarar spelets mekanik. | Hyvä opetusohjelma selittää pelimekaniikan.
+Vi använder en spelmotor som Unity eller Unreal Engine. | Käytämme pelimoottoria kuten Unity tai Unreal Engine.
+Prestanda är kritisk för en flytande upplevelse. | Suorituskyky on kriittinen sujuvan kokemuksen kannalta.
+En prototyp hjälper oss att testa nya idéer snabbt. | Prototyyppi auttaa meitä testaamaan uusia ideoita nopeasti.
+VR-spel kan vara mer fysiskt krävande. | VR-pelit voivat olla fyysisesti vaativampia.
+Avatar-design är viktigt för spelarens identifikation. | Avataarin suunnittelu on tärkeää pelaajan samastumisen kannalta.
+Handkontrollerna har inbyggda sensorer. | Käsiohjaimissa on sisäänrakennetut sensorit.
+Rumsligt ljud förbättrar rumsuppfattningen. | Tilaääni parantaa tilan havaitsemista.
+Vi skapar interaktiva objekt i den virtuella världen. | Luomme interaktiivisia esineitä virtuaalimaailmaan.
+Spelet ska ha en tydlig feedbackloop. | Pelillä on oltava selkeä palautesilmukka.
+Vi itererar på spelets design baserat på feedback. | Toistamme pelisuunnittelua palautteen perusteella.
+Användartestning är avgörande för att hitta problem. | Käyttäjätestaus on ratkaisevan tärkeää ongelmien löytämiseksi.
+En bugg i renderingen kan förstöra upplevelsen. | Renderöintivirhe voi pilata kokemuksen.
+Vi implementerar multiplayer-funktionalitet i spelet. | Toteutamme moninpeliominaisuuden peliin.
+Spelarens progression ska kännas meningsfull. | Pelaajan etenemisen tulee tuntua merkitykselliseltä.
+Vi designar spelet för olika VR-plattformar. | Suunnittelemme pelin eri VR-alustoille.
+Spelet måste vara väl optimerat för olika hårdvaror. | Pelin on oltava hyvin optimoitu eri laitteistoille.
+VR-utveckling kräver kunskap om 3D-modellering. | VR-kehitys vaatii 3D-mallinnuksen osaamista.
+Texturer och material påverkar spelets visuella utseende. | Tekstuurit ja materiaalit vaikuttavat pelin visuaaliseen ilmeeseen.
+Leveldesignen ska guida spelaren genom miljöerna. | Kenttäsuunnittelun tulee ohjata pelaajaa ympäristöjen läpi.
+En dynamisk belysning skapar en mer levande värld. | Dynaaminen valaistus luo elävämmän maailman.
+Vi arbetar med spelsystemet för att det ska vara roligt. | Työskentelemme pelijärjestelmän parissa, jotta se olisi hauska.
+En god ramfrekvens är nödvändig för en smidig upplevelse. | Hyvä ruudunpäivitysnopeus on välttämätön sujuvan kokemuksen kannalta.
+VR-spel har en hög risk för rörelsesjuka. | VR-peleissä on suuri riski liike-sairaudelle.
+Vi skapar en prototyplevel för att testa mekaniken. | Luomme prototyyppikentän mekaniikan testaamiseksi.
+Spelets gameplay-loop är kärnan i upplevelsen. | Pelin pelisilmukka on kokemuksen ydin.
+Användargränssnittet måste vara lätt att läsa i VR. | Käyttöliittymän on oltava helppo lukea VR:ssä.
+Vi designar spelet för att undvika överbelastning av minnet. | Suunnittelemme pelin välttääksemme muistin ylikuormituksen.
+VR-utveckling är en process av ständig iteration. | VR-kehitys on jatkuvan iteraation prosessi.
+Vi behöver en robust AI för våra fiender. | Tarvitsemme vankkaa tekoälyä vihollisillemme.
+Optisk spårning används för att följa användarens rörelser. | Optista seurantaa käytetään käyttäjän liikkeiden seuraamiseen.
+VR-spel kan vara bra för träning och simuleringar. | VR-pelit voivat olla hyviä harjoitteluun ja simulaatioihin.
+En bra leveldesigner skapar en intressant spelvärld. | Hyvä kenttäsuunnittelija luo mielenkiintoisen pelimaailman.
+VR-upplevelsen handlar om immersion. | VR-kokemuksessa on kyse uppoutumisesta.
+Vi arbetar med att minska fördröjningen mellan rörelse och bild. | Työskentelemme viiveen vähentämiseksi liikkeen ja kuvan välillä.
+Ett HUD (Head-Up Display) kan vara problematiskt i VR. | HUD (Head-Up Display) voi olla ongelmallinen VR:ssä.
+Vi använder en spelmotor för att rendera 3D-grafiken. | Käytämme pelimoottoria 3D-grafiikan renderöintiin.
+Spelarens handrörelser översätts till händelser i spelet. | Pelaajan kädenliikkeet käännetään tapahtumiksi pelissä.
+Vi designar ljudet för att det ska låta realistiskt. | Suunnittelemme äänen kuulostamaan realistiselta.
+VR-utveckling kräver kreativ problemlösning. | VR-kehitys vaatii luovaa ongelmanratkaisua.
+Vi fokuserar på att göra spelets kontroller intuitiva. | Keskitymme tekemään pelin ohjaimista intuitiivisia.
+Vi skapar en visuell stil som passar spelets tema. | Luomme visuaalisen tyylin, joka sopii pelin teemaan.
+Spelvärldens skala måste kännas rätt i VR. | Pelimaailman mittakaavan on tunnettava oikealta VR:ssä.
+En bra speldesigner skapar ett engagerande spel. | Hyvä pelisuunnittelija luo mukaansatempaavan pelin.
+Vi testar spelet på olika plattformar och enheter. | Testaamme peliä eri alustoilla ja laitteilla.
+Vi implementerar ett system för att spara och ladda spel. | Toteutamme järjestelmän pelien tallentamiseksi ja lataamiseksi.
+VR-upplevelsen kan vara en djupt personlig resa. | VR-kokemus voi olla syvästi henkilökohtainen matka.
+Spelmekaniken måste anpassas för VR. | Pelimekaniikka on mukautettava VR:lle.
+Vi använder sig av tekniker för att minska rörelsesjuka. | Käytämme tekniikoita liikesairauden vähentämiseksi.
+Användargränssnittet ska vara minimalt och integrerat. | Käyttöliittymän tulee olla minimaalinen ja integroitu.
+Vi arbetar med spelets ljussättning för att skapa stämning. | Työskentelemme pelin valaistuksen parissa luodaksemme tunnelmaa.
+En VR-utvecklare måste tänka på prestanda konstant. | VR-kehittäjän on ajateltava suorituskykyä jatkuvasti.
+Speldesignen måste ta hänsyn till spelarens rörelse. | Pelisuunnittelun on otettava huomioon pelaajan liike.
+Vi skapar en känsla av närvaro genom interaktion. | Luomme läsnäolon tunteen vuorovaikutuksen kautta.
+VR-utveckling är ett multidisciplinärt fält. | VR-kehitys on monialainen kenttä.
+Spelarens synfält är en avgörande faktor. | Pelaajan näkökenttä on ratkaiseva tekijä.
+Vi implementerar spelmekanik som är unik för VR. | Toteutamme pelimekaniikan, joka on ainutlaatuinen VR:lle.
+Spelet ska ge en stark känsla av immersion. | Pelin tulee antaa vahva immersio-tunne.
+Vi använder optimerade 3D-modeller för att spara prestanda. | Käytämme optimoituja 3D-malleja suorituskyvyn säästämiseksi.
+En VR-designer måste förstå spelarens upplevelse. | VR-suunnittelijan on ymmärrettävä pelaajan kokemus.
+Vi testar spelet för att se om det är bekvämt att spela. | Testaamme peliä nähdäksemme, onko se mukava pelata.
+Spelet måste vara väl optimerat för att undvika frame drops. | Pelin on oltava hyvin optimoitu, jotta vältetään ruutunopeuden pudotukset.
+VR-utveckling handlar om att skapa illusioner. | VR-kehitys on illuusioiden luomista.
+Vi skapar en visuell stil som passar för VR. | Luomme visuaalisen tyylin, joka sopii VR:lle.
+Spelaren ska kunna interagera med spelvärlden på ett naturligt sätt. | Pelaajan tulee pystyä vuorovaikuttamaan pelimaailman kanssa luonnollisella tavalla.
+Vi implementerar en handspårningsmekanik. | Toteutamme kädenseurantamekaniikan.
+Spelet ska ge en känsla av djup och rymd. | Pelin tulee antaa syvyyden ja tilan tunne.
+Vi arbetar med ljudbilden för att skapa en realistisk miljö. | Työskentelemme äänimaailman parissa luodaksemme realistisen ympäristön.
+VR-utveckling är en spännande ny gräns. | VR-kehitys on jännittävä uusi rajapinta.
+En bra speldesigner skapar en oförglömlig upplevelse. | Hyvä pelisuunnittelija luo unohtumattoman kokemuksen.
+Vi testar spelet för att hitta alla buggar. | Testaamme peliä löytääksemme kaikki virheet.
+VR-spel kan vara terapeutiska och pedagogiska. | VR-pelit voivat olla terapeuttisia ja pedagogisia.
+Spelarens rörelse i den virtuella världen är en utmaning. | Pelaajan liike virtuaalimaailmassa on haaste.
+Vi skapar en bra balans mellan grafik och prestanda. | Luomme hyvän tasapainon grafiikan ja suorituskyvyn välille.
+En VR-utvecklare måste ha en god förståelse för hårdvara. | VR-kehittäjällä on oltava hyvä ymmärrys laitteistosta.
+Vi fokuserar på att göra spelet så bekvämt som möjligt. | Keskitymme tekemään pelistä mahdollisimman mukavan.
+Spelets gameplay-loop är centralt för retention. | Pelin pelisilmukka on keskeinen säilyttämiselle.
+Vi skapar en design som är lätt för nya spelare att förstå. | Luomme suunnittelun, joka on helppo uusien pelaajien ymmärtää.
+VR-spel kan vara ett bra sätt att berättar historier. | VR-pelit voivat olla hyvä tapa kertoa tarinoita.
+Spelaren måste kunna lita på spelets kontroller. | Pelaajan on voitava luottaa pelin ohjaimiin.
+Vi arbetar med att förbättra spelets visuell feedback. | Työskentelemme parantaaksemme pelin visuaalista palautetta.
+En bra leveldesigner skapar en känsla av utforskning. | Hyvä kenttäsuunnittelija luo tutkimisen tunteen.
+VR-utveckling är en konstant inlärningsprocess. | VR-kehitys on jatkuva oppimisprosessi.
+Vi skapar interaktiva miljöer som reagerar på spelaren. | Luomme interaktiivisia ympäristöjä, jotka reagoivat pelaajaan.
+Spelaren ska känna sig som en del av spelvärlden. | Pelaajan tulee tuntea olevansa osa pelimaailmaa.
+Vi testar spelet för att se om det finns några prestandaproblem. | Testaamme peliä nähdäksemme, onko siinä suorituskykyongelmia.
+En bra speldesigner skapar ett spel som är roligt att spela om och om igen. | Hyvä pelisuunnittelija luo pelin, jota on hauska pelata uudestaan ja uudestaan.
+Takarivi Games | Takarivi Games
