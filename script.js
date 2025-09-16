@@ -61,6 +61,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const finFlag = document.getElementById('fin-flag');
     const sweFlag = document.getElementById('swe-flag');
 
+    // Initialize button state
+    nextSentenceBtn.classList.add('btn-hidden');
+
     let sentences = [];
     let currentSentenceIndex = 0;
     let playerGuess = [];
@@ -120,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             finnishWordsContainerEl.appendChild(wordEl);
         });
 
-        nextSentenceBtn.style.visibility = 'hidden';
+        nextSentenceBtn.classList.add('btn-hidden');
         finnishWordsContainerEl.style.pointerEvents = 'auto'; // Ensure words are clickable
     }
 
@@ -142,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (playerGuess.join(' ') === correctSentence) {
             playerGuessEl.style.color = '#4ade80'; // A nice green color
-            nextSentenceBtn.style.visibility = 'visible';
+            nextSentenceBtn.classList.remove('btn-hidden');
             // Prevent further word selection after correct answer
             finnishWordsContainerEl.style.pointerEvents = 'none';
         } else {
