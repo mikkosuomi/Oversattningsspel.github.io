@@ -1,14 +1,38 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Bouncing flag animation
     const flag = document.getElementById('bouncing-flag');
+    const flagClickArea = document.createElement('div');
+    flagClickArea.style.position = 'fixed';
+    flagClickArea.style.width = '100px';
+    flagClickArea.style.height = '60px';
+    flagClickArea.style.zIndex = '0';
+    flagClickArea.style.cursor = 'pointer';
+    document.body.appendChild(flagClickArea);
     let x = Math.random() * (window.innerWidth - 100);
     let y = Math.random() * (window.innerHeight - 60);
-    let dx = (Math.random() - 0.5) * 4; // Speed in x direction
-    let dy = (Math.random() - 0.5) * 4; // Speed in y direction
+    let dx = (Math.random() - 0.5) * 2;
+    let dy = (Math.random() - 0.5) * 2;
+    let speedMultiplier = 1;
+
+    flagClickArea.addEventListener('click', () => {
+        // Prevent new speed boosts while one is active
+        if (speedMultiplier > 1) return;
+
+        speedMultiplier = 200; // A large spike in speed
+
+        // Gradually reduce the speed multiplier back to 1 over 3 seconds
+        const fadeOutInterval = setInterval(() => {
+            speedMultiplier -= 5;
+            if (speedMultiplier <= 1) {
+                speedMultiplier = 1;
+                clearInterval(fadeOutInterval);
+            }
+        }, 75); // 40 steps * 75ms = 3000ms = 3 seconds
+    });
 
     function animate() {
-        x += dx;
-        y += dy;
+        x += dx * speedMultiplier;
+        y += dy * speedMultiplier;
 
         // Bounce off the walls
         if (x <= 0 || x >= window.innerWidth - 100) {
@@ -20,6 +44,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         flag.style.left = x + 'px';
         flag.style.top = y + 'px';
+        flagClickArea.style.left = x + 'px';
+        flagClickArea.style.top = y + 'px';
 
         requestAnimationFrame(animate);
     }
