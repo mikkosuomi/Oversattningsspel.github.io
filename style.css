@@ -20,7 +20,9 @@ body {
     -khtml-user-drag: none;
     -moz-user-drag: none;
     -o-user-drag: none;
+    position: relative;
 }
+
 
 
 #bouncing-flag {
@@ -55,6 +57,35 @@ body {
     animation: spark-fly 0.6s ease-out forwards;
 }
 
+.damage-spark {
+    position: fixed;
+    width: 2px;
+    height: 2px;
+    background-color: #87ceeb;
+    border-radius: 50%;
+    z-index: 998;
+    pointer-events: none;
+    animation: damage-spark-fly 0.8s ease-out forwards;
+}
+
+@keyframes damage-spark-fly {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+        box-shadow: 0 0 3px #87ceeb;
+    }
+    50% {
+        opacity: 0.7;
+        transform: scale(0.7);
+        box-shadow: 0 0 5px #4682b4;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.2);
+        box-shadow: 0 0 1px #1e90ff;
+    }
+}
+
 @keyframes spark-fly {
     0% {
         opacity: 1;
@@ -74,8 +105,27 @@ body {
 }
 
 h1 {
+    color: #90e0ef;
+    margin-bottom: 30px;
+    font-size: 2em;
+    text-shadow: 0 0 10px #90e0ef;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    z-index: 2000;
+    position: relative;
+    pointer-events: auto;
+}
+
+h1:hover {
     color: #ffffff;
-    z-index: 1;
+    text-shadow: 0 0 15px #90e0ef;
+    transform: scale(1.05);
+}
+
+h1:active {
+    transform: scale(0.98);
+    color: #ffffff;
 }
 
 #game-container {
@@ -86,8 +136,67 @@ h1 {
     text-align: center;
     width: 90%;
     max-width: 600px;
-    z-index: 1;
+    z-index: 1500; /* Above pins (1000) but below title (2000) */
     position: relative;
+    transition: transform 0.4s ease-in-out;
+    transform-origin: center center;
+}
+
+/* Minimized state for flag game mode */
+body.flag-mode #game-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    margin-left: -225px; /* Half of 450px width for centering */
+    transform: scale(0.8);
+    height: 50px;
+    width: 450px;
+    max-width: 90vw;
+    padding: 8px 12px;
+    background-color: rgba(30, 30, 30, 0.95);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1em;
+}
+
+body.flag-mode h1 {
+    font-size: 1.1em;
+    margin: 0 15px 0 0;
+    flex-shrink: 0;
+}
+
+/* Hide word game elements in flag mode */
+body.flag-mode #swedish-sentence-container,
+body.flag-mode #finnish-words-container,
+body.flag-mode #player-guess-container,
+body.flag-mode #button-controls {
+    display: none;
+}
+
+/* Reposition speed bar elements in flag mode */
+body.flag-mode #speed-container {
+    position: static;
+    order: 1;
+    margin-right: 25px;
+    min-width: 80px;
+}
+
+body.flag-mode #warning-container {
+    position: static;
+    order: 2;
+    margin: 0 20px;
+}
+
+body.flag-mode #rip-container {
+    position: static;
+    order: 3;
+}
+
+body.flag-mode #score-container {
+    position: static;
+    order: 4;
 }
 
 #score-container {
@@ -98,6 +207,7 @@ h1 {
     align-items: center;
     gap: 10px;
     z-index: 10;
+    font-size: 0.9em;
 }
 
 #speed-container {
@@ -120,6 +230,17 @@ h1 {
     display: none; /* Hidden by default */
 }
 
+#rip-container {
+    position: absolute;
+    top: 15px;
+    right: 120px; /* Position between warning and score */
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    z-index: 10;
+    font-size: 0.9em;
+}
+
 #score-number {
     color: #ffffff;
     font-size: 1.2em;
@@ -138,7 +259,21 @@ h1 {
     color: #ffffff;
     font-weight: 600;
     text-shadow: 0 0 6px #ffffff;
-    min-width: 40px;
+    min-width: 50px;
+    text-align: left;
+}
+
+#rip-label {
+    color: #ff6b6b;
+    font-weight: 400;
+    font-style: italic;
+}
+
+#rip-number {
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 0 0 6px #ff6b6b;
+    min-width: 20px;
     text-align: left;
 }
 
@@ -189,6 +324,7 @@ h1 {
     align-items: center;
     justify-content: center;
     height: 100px; /* Generous height for multi-line sentences */
+    margin-top: 20px; /* Add space between top bar and question */
     margin-bottom: 20px;
 }
 
@@ -355,6 +491,13 @@ button {
         padding: 0 !important;
     }
     
+    html {
+        background: radial-gradient(circle, #2a2a2a, #121212) !important;
+        background-attachment: fixed !important;
+        background-size: 100% 100% !important;
+        background-repeat: no-repeat !important;
+    }
+    
     body {
         display: flex !important;
         flex-direction: column !important;
@@ -362,12 +505,17 @@ button {
         align-items: center !important;
         padding-top: 20px !important;
         box-sizing: border-box !important;
+        background: radial-gradient(circle, #2a2a2a, #121212) !important;
+        background-attachment: fixed !important;
+        background-size: 100% 100% !important;
+        background-repeat: no-repeat !important;
     }
     
     /* Hide all flag game elements */
     #score-container,
     #speed-container,
-    #warning-container {
+    #warning-container,
+    #rip-container {
         display: none !important;
     }
     
@@ -464,7 +612,8 @@ button {
     /* Keep flag game elements visible */
     #score-container,
     #speed-container,
-    #warning-container {
+    #warning-container,
+    #rip-container {
         display: flex !important;
     }
     

@@ -41,15 +41,26 @@ document.addEventListener('DOMContentLoaded', () => {
         return isMobilePortrait() ? 0.3 : 1; // Much slower in mobile portrait
     }
 
-    function createTrailParticle(x, y) {
+    function createTrailParticle(x, y, dx, dy) {
         const particle = document.createElement('div');
         particle.style.position = 'fixed';
         particle.style.width = '3px';
         particle.style.height = '3px';
         particle.style.backgroundColor = '#006aa7'; // Swedish flag blue
         particle.style.borderRadius = '50%';
-        particle.style.left = (x + 48) + 'px'; // Center of flag
-        particle.style.top = (y + 28) + 'px';
+        
+        // Calculate trail position behind the flag's movement direction
+        const trailDistance = 50; // Distance behind the flag
+        const speed = Math.sqrt(dx * dx + dy * dy);
+        const normalizedDx = speed > 0 ? dx / speed : 0;
+        const normalizedDy = speed > 0 ? dy / speed : 0;
+        
+        // Place particle behind the flag's movement
+        const trailX = x + 48 - (normalizedDx * trailDistance); // Center of flag minus movement direction
+        const trailY = y + 28 - (normalizedDy * trailDistance);
+        
+        particle.style.left = trailX + 'px';
+        particle.style.top = trailY + 'px';
         particle.style.opacity = '0.6';
         particle.style.pointerEvents = 'none';
         particle.style.zIndex = '0';
@@ -126,8 +137,8 @@ document.addEventListener('DOMContentLoaded', () => {
         // Disable pin dropping in mobile portrait mode
         if (isMobilePortrait()) return;
         
-        // Prevent dropping pins on UI elements, the flag, or the flag's click area
-        if (e.target.closest('#game-container, #flag-click-area, #bouncing-flag, .pin')) {
+        // Prevent dropping pins on UI elements, the flag, the flag's click area, or the title
+        if (e.target.closest('#game-container, #flag-click-area, #bouncing-flag, .pin, h1')) {
             return;
         }
 
@@ -149,6 +160,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Adjust position to center the pin on the cursor
         pin.style.left = (x - 5) + 'px';
         pin.style.top = (y - 5) + 'px';
+        
+        // Add collision counter to the pin
+        pin.collisionCount = 0;
+        pin.maxCollisions = 10;
+        
+        // Add a data attribute for debugging
+        pin.setAttribute('data-pin-type', 'regular');
+        
         document.body.appendChild(pin);
         pins.push(pin);
         checkCollision(pin); // Check for collision immediately
@@ -156,6 +175,11 @@ document.addEventListener('DOMContentLoaded', () => {
         pin.addEventListener('mousedown', (e) => {
             if (e.button === 2) { // Right-click to remove a pin
                 e.stopPropagation(); // Prevent dropping a new pin
+                
+                // Increment destroyed pins counter for manual removal too
+                destroyedPinsCount++;
+                ripNumber.textContent = destroyedPinsCount.toString();
+                
                 pin.remove();
                 pins = pins.filter(p => p !== pin);
             }
@@ -206,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
             speedMultiplier = 1;
             speedBoostEndTime = 0;
             
-            // Reset base speed multiplier
-            baseSpeedMultiplier = 1;
+            // Reset base speed multiplier with randomized value
+            baseSpeedMultiplier = getRandomFlagSpeed();
             
             // Clear all trail particles
             trailParticles.forEach(trail => {
@@ -219,15 +243,30 @@ document.addEventListener('DOMContentLoaded', () => {
             lastTrailX = x;
             lastTrailY = y;
         }
+        
+        // Debug sequence handler
+        keySequence += e.key.toLowerCase();
+        if (keySequence.length > 5) keySequence = keySequence.slice(-5);
+        if (keySequence === 'green') {
+            score++;
+            scoreNumber.textContent = score.toString();
+            // Spawn at score pin location (top right corner)
+            const scoreContainer = document.getElementById('score-container');
+            const rect = scoreContainer.getBoundingClientRect();
+            createDraggableGreenPin(rect.right - 15, rect.top + 15);
+            keySequence = '';
+        }
     });
 
     function animate() {
         const mobileSpeedMultiplier = getMobileSpeedMultiplier();
-        x += dx * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
-        y += dy * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
+        const ripSpeedMultiplier = getRipSpeedMultiplier();
+        
+        x += dx * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+        y += dy * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
 
         // Calculate and display current speed
-        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
+        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
         speedNumber.textContent = currentSpeed.toFixed(1);
         
         // Show/hide warning based on speed
@@ -236,6 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             warningContainer.style.display = 'none';
         }
+        
+        // Apply passive damage when speed > 1000
+        applyPassiveDamage(currentSpeed);
 
         // Bounce off the walls
         if (x <= 0 || x >= window.innerWidth - 100) {
@@ -251,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const trailDistance = Math.sqrt(trailDeltaX * trailDeltaX + trailDeltaY * trailDeltaY);
         
         if (trailDistance >= trailSpacing) {
-            createTrailParticle(x, y);
+            createTrailParticle(x, y, dx, dy);
             lastTrailX = x;
             lastTrailY = y;
         }
@@ -303,6 +345,41 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 600);
         }
     }
+    
+    // Function to create light blue damage sparks from pins
+    function createDamageSparks(pinX, pinY) {
+        // Create 1-2 small sparks per pin to keep it light
+        const sparkCount = 1 + Math.floor(Math.random() * 2);
+        
+        for (let i = 0; i < sparkCount; i++) {
+            const spark = document.createElement('div');
+            spark.classList.add('damage-spark');
+            
+            // Random direction and small distance
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 8 + Math.random() * 12;
+            const sparkX = pinX + Math.cos(angle) * distance;
+            const sparkY = pinY + Math.sin(angle) * distance;
+            
+            spark.style.left = pinX + 'px';
+            spark.style.top = pinY + 'px';
+            
+            document.body.appendChild(spark);
+            
+            // Animate to final position
+            setTimeout(() => {
+                spark.style.left = sparkX + 'px';
+                spark.style.top = sparkY + 'px';
+            }, 10);
+            
+            // Remove spark after animation
+            setTimeout(() => {
+                if (spark.parentNode) {
+                    spark.parentNode.removeChild(spark);
+                }
+            }, 800);
+        }
+    }
 
     function checkCollision(pin) {
         const pinRect = pin.getBoundingClientRect();
@@ -320,8 +397,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const pinCenterX = pinRect.left + pinRect.width / 2;
             const pinCenterY = pinRect.top + pinRect.height / 2;
 
+            // Calculate current speed for oneshot detection
+            const mobileSpeedMultiplier = getMobileSpeedMultiplier();
+            const ripSpeedMultiplier = getRipSpeedMultiplier();
+            const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+            
+            const isGreenPin = pin.classList.contains('green-pin');
+            
+            // Oneshot red pins if speed > 1000
+            if (!isGreenPin && currentSpeed > 1000) {
+                pin.collisionCount = 10; // Set to max to trigger instant destruction
+                console.log(`💥 ONESHOT! Speed: ${currentSpeed.toFixed(1)} - Instantly destroyed red pin!`);
+            } else {
+                // Normal collision damage
+                pin.collisionCount = (pin.collisionCount || 0) + 1;
+            }
+            
             // Create sparks at collision point
             createSparks(pinCenterX, pinCenterY);
+
+            // Check if pin should be removed after collisions (but not green pins)
+            const maxCollisions = pin.maxCollisions || 10; // Default to 10 if not set
+            const pinType = isGreenPin ? 'green' : 'regular';
+            
+            // Debug logging
+            console.log(`${pinType} pin collision #${pin.collisionCount}/${isGreenPin ? '∞' : maxCollisions}`);
+            
+            // Only destroy regular pins, green pins are indestructible
+            if (!isGreenPin && pin.collisionCount >= maxCollisions) {
+                console.log(`Removing ${pinType} pin after ${pin.collisionCount} collisions`);
+                
+                // Increment destroyed pins counter
+                destroyedPinsCount++;
+                ripNumber.textContent = destroyedPinsCount.toString();
+                
+                pin.remove();
+                pins = pins.filter(p => p !== pin);
+                return; // Exit early since pin is removed
+            }
 
             // Special handling for green pins
             if (pin.classList.contains('green-pin')) {
@@ -382,6 +495,14 @@ document.addEventListener('DOMContentLoaded', () => {
         greenPin.classList.add('pin', 'green-pin');
         greenPin.style.left = (x - 5) + 'px';
         greenPin.style.top = (y - 5) + 'px';
+        
+        // Add collision counter to green pins too
+        greenPin.collisionCount = 0;
+        greenPin.maxCollisions = 10;
+        
+        // Add a data attribute for debugging
+        greenPin.setAttribute('data-pin-type', 'green');
+        
         document.body.appendChild(greenPin);
         pins.push(greenPin);
         
@@ -396,6 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.button === 2) {
                 // Right-click to remove
                 e.stopPropagation();
+                
+                // Increment destroyed pins counter for manual removal too
+                destroyedPinsCount++;
+                ripNumber.textContent = destroyedPinsCount.toString();
+                
                 greenPin.remove();
                 pins = pins.filter(p => p !== greenPin);
                 return;
@@ -508,6 +634,134 @@ document.addEventListener('DOMContentLoaded', () => {
     const sweFlag = document.getElementById('swe-flag');
     const speedNumber = document.getElementById('speed-number');
     const warningContainer = document.getElementById('warning-container');
+    const ripNumber = document.getElementById('rip-number');
+    
+    // Initialize RIP counter
+    let destroyedPinsCount = 0;
+    
+    // Passive damage system for extreme speeds
+    let lastPassiveDamageTime = 0;
+    
+    // Debug key sequence tracking
+    let keySequence = '';
+    
+    // Flag mode toggle
+    let isFlagMode = false;
+    
+    // Function to generate weighted random speed for flag reset
+    function getRandomFlagSpeed() {
+        const random = Math.random();
+        
+        // 1% chance for extreme speed of 100
+        if (random < 0.01) {
+            console.log('🚀 EXTREME SPEED: 100!');
+            return 100;
+        }
+        
+        // 5% chance for max speed (2.0) - from the remaining 99%
+        if (random < 0.06) { // 0.01 to 0.06 = 5% of total
+            console.log('⚡ High speed: 2.0');
+            return 2.0;
+        }
+        
+        // Remaining 94% get weighted distribution from 0.7 to 1.9
+        // Map the remaining range (0.06 to 1.0) to our speed range
+        const normalizedRandom = (random - 0.06) / 0.94; // Normalize to 0-1
+        
+        // Use inverse power to make higher speeds more common than my previous version
+        const weightedRandom = Math.pow(normalizedRandom, 0.7); // Less aggressive weighting
+        const speed = 0.7 + (weightedRandom * 1.2); // 0.7 to 1.9 range
+        
+        // Ensure speed is never below 0.7
+        const finalSpeed = Math.max(0.7, Math.min(1.9, speed));
+        
+        console.log(`🎯 Normal speed: ${finalSpeed.toFixed(1)} (raw: ${speed.toFixed(2)})`);
+        return parseFloat(finalSpeed.toFixed(1));
+    }
+    
+    // Function to calculate RIP-based speed multiplier
+    function getRipSpeedMultiplier() {
+        // Every 1000 RIP points doubles the speed
+        const ripLevel = Math.floor(destroyedPinsCount / 1000);
+        const ripMultiplier = Math.pow(2, ripLevel);
+        
+        // Log when reaching new RIP speed levels
+        if (ripLevel > 0 && destroyedPinsCount % 1000 === 0) {
+            console.log(`🔥 RIP SPEED BOOST! Level ${ripLevel}: ${ripMultiplier}x speed multiplier!`);
+        }
+        
+        return ripMultiplier;
+    }
+    
+    // Function to apply passive damage to pins when speed > 1000
+    function applyPassiveDamage(currentSpeed) {
+        if (currentSpeed <= 1000) return;
+        
+        const currentTime = Date.now();
+        
+        // Apply damage every 2000ms (2 seconds) to reduce lag
+        if (currentTime - lastPassiveDamageTime >= 2000) {
+            lastPassiveDamageTime = currentTime;
+            
+            const regularPins = pins.filter(pin => !pin.classList.contains('green-pin'));
+            
+            // Limit visual effects - only show sparks on a few random pins
+            const maxSparks = Math.min(3, regularPins.length);
+            const sparkPins = regularPins.slice(0, maxSparks);
+            
+            // Damage all pins except green ones
+            regularPins.forEach((pin, index) => {
+                pin.collisionCount = (pin.collisionCount || 0) + 1;
+                
+                // Only create sparks for first few pins to reduce lag
+                if (index < maxSparks) {
+                    const pinRect = pin.getBoundingClientRect();
+                    const pinCenterX = pinRect.left + pinRect.width / 2;
+                    const pinCenterY = pinRect.top + pinRect.height / 2;
+                    createDamageSparks(pinCenterX, pinCenterY);
+                }
+                
+                const maxCollisions = pin.maxCollisions || 10;
+                
+                // Check if pin should be destroyed
+                if (pin.collisionCount >= maxCollisions) {
+                    // Increment destroyed pins counter
+                    destroyedPinsCount++;
+                    ripNumber.textContent = destroyedPinsCount.toString();
+                    
+                    // Remove pin
+                    pin.remove();
+                    pins = pins.filter(p => p !== pin);
+                }
+            });
+            
+            if (regularPins.length > 0) {
+                console.log(`⚡ Speed aura damage! Speed: ${currentSpeed.toFixed(1)} - Damaged ${regularPins.length} pins (${maxSparks} with sparks)`);
+            }
+        }
+    }
+    
+    // Title click handler for flag mode toggle
+    const title = document.querySelector('h1');
+    title.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        e.preventDefault(); // Prevent any default behavior
+        
+        isFlagMode = !isFlagMode;
+        
+        if (isFlagMode) {
+            document.body.classList.add('flag-mode');
+            console.log('Switched to flag game mode');
+        } else {
+            document.body.classList.remove('flag-mode');
+            console.log('Switched to word learning mode');
+        }
+    });
+    
+    // Also add mousedown handler for better responsiveness
+    title.addEventListener('mousedown', (e) => {
+        e.stopPropagation(); // Prevent pin dropping when clicking title
+    });
 
     // Initialize button state
     nextSentenceBtn.classList.add('btn-hidden');
