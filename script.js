@@ -19,6 +19,66 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let speedBoostEndTime = 0; // Track when speed boost should end
     let speedBoostInterval = null;
+    
+    // Mouse drag variables for pin placement
+    let isMouseDragging = false;
+    let lastPinX = 0;
+    let lastPinY = 0;
+    const pinSpacing = 18; // Distance between pins (14px pin + 4px gap)
+    
+    // Trail effect variables
+    let trailParticles = [];
+    let lastTrailX = x;
+    let lastTrailY = y;
+    const trailSpacing = 8; // Distance between trail particles
+
+    function createTrailParticle(x, y) {
+        const particle = document.createElement('div');
+        particle.style.position = 'fixed';
+        particle.style.width = '3px';
+        particle.style.height = '3px';
+        particle.style.backgroundColor = '#006aa7'; // Swedish flag blue
+        particle.style.borderRadius = '50%';
+        particle.style.left = (x + 48) + 'px'; // Center of flag
+        particle.style.top = (y + 28) + 'px';
+        particle.style.opacity = '0.6';
+        particle.style.pointerEvents = 'none';
+        particle.style.zIndex = '0';
+        particle.style.transition = 'opacity 3s ease-out';
+        
+        document.body.appendChild(particle);
+        
+        const trailData = {
+            element: particle,
+            createdAt: Date.now(),
+            lifetime: 3000 // 3 seconds
+        };
+        
+        trailParticles.push(trailData);
+        
+        // Start fading immediately
+        setTimeout(() => {
+            particle.style.opacity = '0';
+        }, 50);
+        
+        return trailData;
+    }
+
+    function updateTrailParticles() {
+        const currentTime = Date.now();
+        
+        // Remove expired particles
+        trailParticles = trailParticles.filter(trail => {
+            const age = currentTime - trail.createdAt;
+            if (age > trail.lifetime) {
+                if (trail.element.parentNode) {
+                    trail.element.parentNode.removeChild(trail.element);
+                }
+                return false;
+            }
+            return true;
+        });
+    }
 
     function startSpeedBoost(duration = 3000, multiplier = 200) {
         // Clear existing boost interval if any
@@ -56,25 +116,39 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (e.button === 0) { // Left-click to add a pin
-            const pin = document.createElement('div');
-            pin.classList.add('pin');
-            // Adjust position to center the pin on the cursor
-            pin.style.left = (e.clientX - 5) + 'px';
-            pin.style.top = (e.clientY - 5) + 'px';
-            document.body.appendChild(pin);
-            pins.push(pin);
-            checkCollision(pin); // Check for collision immediately
-
-            pin.addEventListener('mousedown', (e) => {
-                if (e.button === 2) { // Right-click to remove a pin
-                    e.stopPropagation(); // Prevent dropping a new pin
-                    pin.remove();
-                    pins = pins.filter(p => p !== pin);
-                }
-            });
+        if (e.button === 0) { // Left-click to start dragging and add pins
+            isMouseDragging = true;
+            lastPinX = e.clientX;
+            lastPinY = e.clientY;
+            
+            // Create the first pin at mouse position
+            createPinAtPosition(e.clientX, e.clientY);
+            
+            e.preventDefault(); // Prevent text selection while dragging
         }
     });
+
+    function createPinAtPosition(x, y) {
+        const pin = document.createElement('div');
+        pin.classList.add('pin');
+        // Adjust position to center the pin on the cursor
+        pin.style.left = (x - 5) + 'px';
+        pin.style.top = (y - 5) + 'px';
+        document.body.appendChild(pin);
+        pins.push(pin);
+        checkCollision(pin); // Check for collision immediately
+
+        pin.addEventListener('mousedown', (e) => {
+            if (e.button === 2) { // Right-click to remove a pin
+                e.stopPropagation(); // Prevent dropping a new pin
+                pin.remove();
+                pins = pins.filter(p => p !== pin);
+            }
+        });
+        
+        return pin;
+    }
+
 
     window.addEventListener('contextmenu', (e) => {
         e.preventDefault();
@@ -110,12 +184,33 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Reset base speed multiplier
             baseSpeedMultiplier = 1;
+            
+            // Clear all trail particles
+            trailParticles.forEach(trail => {
+                if (trail.element.parentNode) {
+                    trail.element.parentNode.removeChild(trail.element);
+                }
+            });
+            trailParticles = [];
+            lastTrailX = x;
+            lastTrailY = y;
         }
     });
 
     function animate() {
         x += dx * speedMultiplier * baseSpeedMultiplier;
         y += dy * speedMultiplier * baseSpeedMultiplier;
+
+        // Calculate and display current speed
+        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier;
+        speedNumber.textContent = currentSpeed.toFixed(1);
+        
+        // Show/hide warning based on speed
+        if (currentSpeed > 500) {
+            warningContainer.style.display = 'block';
+        } else {
+            warningContainer.style.display = 'none';
+        }
 
         // Bounce off the walls
         if (x <= 0 || x >= window.innerWidth - 100) {
@@ -124,6 +219,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (y <= 0 || y >= window.innerHeight - 60) {
             dy = -dy;
         }
+
+        // Create trail particles if flag has moved enough
+        const trailDeltaX = x - lastTrailX;
+        const trailDeltaY = y - lastTrailY;
+        const trailDistance = Math.sqrt(trailDeltaX * trailDeltaX + trailDeltaY * trailDeltaY);
+        
+        if (trailDistance >= trailSpacing) {
+            createTrailParticle(x, y);
+            lastTrailX = x;
+            lastTrailY = y;
+        }
+
+        // Update and cleanup trail particles
+        updateTrailParticles();
 
         // Collision with pins
         pins.forEach(checkCollision);
@@ -316,22 +425,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('mousemove', (e) => {
-        if (!isDragging || !draggedPin) return;
+        // Handle existing pin dragging
+        if (isDragging && draggedPin) {
+            draggedPin.style.left = (e.clientX - dragOffsetX) + 'px';
+            draggedPin.style.top = (e.clientY - dragOffsetY) + 'px';
+            return; // Don't place new pins while dragging existing ones
+        }
         
-        draggedPin.style.left = (e.clientX - dragOffsetX) + 'px';
-        draggedPin.style.top = (e.clientY - dragOffsetY) + 'px';
+        // Handle drag-to-place-pins functionality
+        if (isMouseDragging) {
+            // Calculate distance from last pin position
+            const deltaX = e.clientX - lastPinX;
+            const deltaY = e.clientY - lastPinY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Only place a new pin if we've moved far enough
+            if (distance >= pinSpacing) {
+                // Prevent dropping pins on UI elements
+                if (e.target.closest('#game-container, #flag-click-area, #bouncing-flag')) {
+                    return;
+                }
+                
+                createPinAtPosition(e.clientX, e.clientY);
+                lastPinX = e.clientX;
+                lastPinY = e.clientY;
+            }
+        }
     });
 
     document.addEventListener('mouseup', (e) => {
-        if (!isDragging || !draggedPin) return;
+        // Handle existing pin dragging
+        if (isDragging && draggedPin) {
+            isDragging = false;
+            draggedPin.classList.remove('dragging');
+            
+            // Reset z-index but keep the pin where it was dropped
+            draggedPin.style.zIndex = '1000';
+            
+            draggedPin = null;
+        }
         
-        isDragging = false;
-        draggedPin.classList.remove('dragging');
-        
-        // Reset z-index but keep the pin where it was dropped
-        draggedPin.style.zIndex = '1000';
-        
-        draggedPin = null;
+        // Handle drag-to-place-pins functionality
+        if (e.button === 0) {
+            isMouseDragging = false;
+        }
     });
 
     requestAnimationFrame(animate);
@@ -344,6 +481,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const undoBtn = document.getElementById('undo-btn');
     const finFlag = document.getElementById('fin-flag');
     const sweFlag = document.getElementById('swe-flag');
+    const speedNumber = document.getElementById('speed-number');
+    const warningContainer = document.getElementById('warning-container');
 
     // Initialize button state
     nextSentenceBtn.classList.add('btn-hidden');
