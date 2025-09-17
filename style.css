@@ -340,5 +340,70 @@ button {
     .finnish-word {
         padding: 8px 12px;
     }
+}
 
+/* Mobile Portrait - Word Training Mode Only */
+@media (max-width: 600px) and (orientation: portrait) {
+    /* Hide all flag game elements */
+    #score-container,
+    #speed-container,
+    #warning-container {
+        display: none !important;
+    }
+    
+    /* Hide pins */
+    .pin {
+        display: none !important;
+    }
+    
+    /* Make flag slower and more subtle */
+    #bouncing-flag {
+        opacity: 0.1 !important;
+        width: 60px !important;
+    }
+    
+    /* Focus on word game */
+    #game-container {
+        margin-top: 20px;
+    }
+    
+    h1 {
+        margin-bottom: 20px;
+    }
+}
+
+/* Mobile Landscape - Flag Game Mode Only */
+@media (max-width: 900px) and (orientation: landscape) {
+    /* Hide word game elements */
+    #swedish-sentence-container,
+    #finnish-words-container,
+    #player-guess-container,
+    #button-controls {
+        display: none !important;
+    }
+    
+    /* Make game container minimal */
+    #game-container {
+        background: transparent !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        height: auto !important;
+    }
+    
+    /* Keep flag game elements visible */
+    #score-container,
+    #speed-container,
+    #warning-container {
+        display: flex !important;
+    }
+    
+    /* Adjust positioning for landscape */
+    body {
+        padding-top: 10px;
+    }
+    
+    h1 {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
 }

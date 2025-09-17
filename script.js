@@ -31,6 +31,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTrailX = x;
     let lastTrailY = y;
     const trailSpacing = 8; // Distance between trail particles
+    
+    // Mobile detection and speed adjustment
+    function isMobilePortrait() {
+        return window.innerWidth <= 600 && window.innerHeight > window.innerWidth;
+    }
+    
+    function getMobileSpeedMultiplier() {
+        return isMobilePortrait() ? 0.3 : 1; // Much slower in mobile portrait
+    }
 
     function createTrailParticle(x, y) {
         const particle = document.createElement('div');
@@ -104,6 +113,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     flagClickArea.addEventListener('click', () => {
+        // Disable flag clicking in mobile portrait mode
+        if (isMobilePortrait()) return;
+        
         // Prevent new speed boosts while one is active
         if (speedMultiplier > 1) return;
 
@@ -111,6 +123,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.body.addEventListener('mousedown', (e) => {
+        // Disable pin dropping in mobile portrait mode
+        if (isMobilePortrait()) return;
+        
         // Prevent dropping pins on UI elements, the flag, or the flag's click area
         if (e.target.closest('#game-container, #flag-click-area, #bouncing-flag, .pin')) {
             return;
@@ -163,6 +178,15 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
+    // Handle orientation changes
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            // Reset trail position after orientation change
+            lastTrailX = x;
+            lastTrailY = y;
+        }, 100);
+    });
+
     // R key to reset flag
     document.addEventListener('keydown', (e) => {
         if (e.key.toLowerCase() === 'r') {
@@ -198,11 +222,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     function animate() {
-        x += dx * speedMultiplier * baseSpeedMultiplier;
-        y += dy * speedMultiplier * baseSpeedMultiplier;
+        const mobileSpeedMultiplier = getMobileSpeedMultiplier();
+        x += dx * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
+        y += dy * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
 
         // Calculate and display current speed
-        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier;
+        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier;
         speedNumber.textContent = currentSpeed.toFixed(1);
         
         // Show/hide warning based on speed
