@@ -262,22 +262,42 @@ document.addEventListener('DOMContentLoaded', () => {
         const mobileSpeedMultiplier = getMobileSpeedMultiplier();
         const ripSpeedMultiplier = getRipSpeedMultiplier();
         
-        x += dx * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
-        y += dy * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+        // Calculate the full speed multiplier for internal calculations
+        const fullSpeedMultiplier = speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+        
+        // Calculate current speed for game mechanics (uncapped)
+        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * fullSpeedMultiplier;
+        
+        // Cap the visual movement speed at 300 equivalent
+        const maxVisualSpeed = 300;
+        const baseSpeed = Math.sqrt(dx * dx + dy * dy);
+        const visualSpeedMultiplier = baseSpeed > 0 ? Math.min(fullSpeedMultiplier, maxVisualSpeed / baseSpeed) : fullSpeedMultiplier;
+        
+        // Apply capped movement for visual flag position
+        x += dx * visualSpeedMultiplier;
+        y += dy * visualSpeedMultiplier;
 
-        // Calculate and display current speed
-        const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
-        speedNumber.textContent = currentSpeed.toFixed(1);
+        // Cap the displayed speed at 300 for visual clarity, but keep internal calculation intact
+        const displayedSpeed = Math.min(currentSpeed, 300);
+        speedNumber.textContent = displayedSpeed.toFixed(1);
         
         // Show/hide warning and reset text based on speed
         if (currentSpeed > 500) {
             warningContainer.style.display = 'block';
             warningText.style.display = 'inline';
             resetText.style.display = 'none';
+            
+            // Add red blinking effect when speed > 1000
+            if (currentSpeed > 1000) {
+                warningText.classList.add('extreme-speed-warning');
+            } else {
+                warningText.classList.remove('extreme-speed-warning');
+            }
         } else {
             warningContainer.style.display = 'block';
             warningText.style.display = 'none';
             resetText.style.display = 'inline';
+            warningText.classList.remove('extreme-speed-warning');
         }
         
         // Apply passive damage when speed > 1000
@@ -385,6 +405,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Function to create damage indicator showing how much damage was dealt
+    function createDamageIndicator(x, y, damage, currentSpeed) {
+        const indicator = document.createElement('div');
+        indicator.style.position = 'fixed';
+        indicator.style.left = x + 'px';
+        indicator.style.top = y + 'px';
+        indicator.style.color = '#ff4444';
+        indicator.style.fontSize = '14px';
+        indicator.style.fontWeight = 'bold';
+        indicator.style.pointerEvents = 'none';
+        indicator.style.zIndex = '10000';
+        indicator.style.textShadow = '1px 1px 2px rgba(0,0,0,0.8)';
+        indicator.style.transition = 'all 1s ease-out';
+        
+        // Show damage amount and speed context
+        if (damage >= 10) {
+            indicator.textContent = 'ONESHOT!';
+            indicator.style.color = '#ff0000';
+            indicator.style.fontSize = '16px';
+        } else if (damage > 1) {
+            indicator.textContent = `-${damage} (${Math.floor(currentSpeed)})`;
+            indicator.style.color = '#ff6600';
+        } else {
+            indicator.textContent = '-1';
+            indicator.style.color = '#ffaa44';
+        }
+        
+        document.body.appendChild(indicator);
+        
+        // Animate upward and fade out
+        setTimeout(() => {
+            indicator.style.top = (y - 30) + 'px';
+            indicator.style.opacity = '0';
+        }, 50);
+        
+        // Remove after animation
+        setTimeout(() => {
+            if (indicator.parentNode) {
+                indicator.parentNode.removeChild(indicator);
+            }
+        }, 1100);
+    }
+
     function checkCollision(pin) {
         const pinRect = pin.getBoundingClientRect();
         const flagRect = flag.getBoundingClientRect();
@@ -408,50 +471,35 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const isGreenPin = pin.classList.contains('green-pin');
             
+            // Calculate damage based on speed
+            let damage = 1; // Base damage
+            
+            // After 300 speed, damage scales with speed
+            if (currentSpeed > 300) {
+                // Damage scales from 1 to higher values based on speed above 300
+                // At 600 speed = 2x damage, at 900 speed = 3x damage, etc.
+                const speedAbove300 = currentSpeed - 300;
+                damage = 1 + Math.floor(speedAbove300 / 300);
+            }
+            
             // Oneshot red pins if speed > 1000
             if (!isGreenPin && currentSpeed > 1000) {
-                pin.collisionCount = 10; // Set to max to trigger instant destruction
+                damage = 10; // Set to max to trigger instant destruction
                 console.log(`💥 ONESHOT! Speed: ${currentSpeed.toFixed(1)} - Instantly destroyed red pin!`);
-            } else {
-                // Normal collision damage
-                pin.collisionCount = (pin.collisionCount || 0) + 1;
+            }
+            
+            // Apply damage
+            pin.collisionCount = (pin.collisionCount || 0) + damage;
+            
+            // Create damage indicator (only for regular pins)
+            if (!isGreenPin) {
+                createDamageIndicator(pinCenterX, pinCenterY - 15, damage, currentSpeed);
             }
             
             // Create sparks at collision point
             createSparks(pinCenterX, pinCenterY);
 
-            // Check if pin should be removed after collisions (but not green pins)
-            const maxCollisions = pin.maxCollisions || 10; // Default to 10 if not set
-            const pinType = isGreenPin ? 'green' : 'regular';
-            
-            // Debug logging
-            console.log(`${pinType} pin collision #${pin.collisionCount}/${isGreenPin ? '∞' : maxCollisions}`);
-            
-            // Only destroy regular pins, green pins are indestructible
-            if (!isGreenPin && pin.collisionCount >= maxCollisions) {
-                console.log(`Removing ${pinType} pin after ${pin.collisionCount} collisions`);
-                
-                // Increment destroyed pins counter
-                destroyedPinsCount++;
-                ripNumber.textContent = destroyedPinsCount.toString();
-                
-                pin.remove();
-                pins = pins.filter(p => p !== pin);
-                return; // Exit early since pin is removed
-            }
-
-            // Special handling for green pins
-            if (pin.classList.contains('green-pin')) {
-                // Green pin gives 300% speed boost and extends timer by 3 seconds
-                if (speedMultiplier < 3) {
-                    // If no boost or lower boost, start 300% boost
-                    startSpeedBoost(3000, 3);
-                } else {
-                    // If already boosted, extend the timer by 3 seconds
-                    speedBoostEndTime += 3000;
-                }
-            }
-
+            // PHYSICS FIRST - Calculate collision physics before pin destruction
             // Calculate direction from pin to flag
             const deltaX = flagCenterX - pinCenterX;
             const deltaY = flagCenterY - pinCenterY;
@@ -483,6 +531,38 @@ document.addEventListener('DOMContentLoaded', () => {
             // Ensure flag stays within screen bounds after collision
             x = Math.max(0, Math.min(x, window.innerWidth - 100));
             y = Math.max(0, Math.min(y, window.innerHeight - 60));
+
+            // Special handling for green pins
+            if (pin.classList.contains('green-pin')) {
+                // Green pin gives 300% speed boost and extends timer by 3 seconds
+                if (speedMultiplier < 3) {
+                    // If no boost or lower boost, start 300% boost
+                    startSpeedBoost(3000, 3);
+                } else {
+                    // If already boosted, extend the timer by 3 seconds
+                    speedBoostEndTime += 3000;
+                }
+            }
+
+            // DESTRUCTION LAST - Check if pin should be removed after physics are applied
+            const maxCollisions = pin.maxCollisions || 10; // Default to 10 if not set
+            const pinType = isGreenPin ? 'green' : 'regular';
+            
+            // Debug logging
+            console.log(`${pinType} pin collision #${pin.collisionCount}/${isGreenPin ? '∞' : maxCollisions}`);
+            
+            // Only destroy regular pins, green pins are indestructible
+            if (!isGreenPin && pin.collisionCount >= maxCollisions) {
+                console.log(`Removing ${pinType} pin after ${pin.collisionCount} collisions`);
+                
+                // Increment destroyed pins counter
+                destroyedPinsCount++;
+                ripNumber.textContent = destroyedPinsCount.toString();
+                
+                pin.remove();
+                pins = pins.filter(p => p !== pin);
+                return; // Exit early since pin is removed
+            }
         }
     }
 

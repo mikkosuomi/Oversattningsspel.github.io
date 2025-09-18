@@ -305,6 +305,25 @@ body.flag-mode #score-container {
     }
 }
 
+.extreme-speed-warning {
+    color: #ff0000 !important;
+    text-shadow: 0 0 12px #ff0000 !important;
+    animation: blink-red-warning 0.4s infinite !important;
+}
+
+@keyframes blink-red-warning {
+    0%, 50% {
+        opacity: 1;
+        color: #ff0000;
+        text-shadow: 0 0 15px #ff0000;
+    }
+    51%, 100% {
+        opacity: 0.2;
+        color: #aa0000;
+        text-shadow: 0 0 8px #aa0000;
+    }
+}
+
 .score-pin {
     background-color: #000000 !important;
     border: 2px solid #fff !important;
