@@ -15,6 +15,8 @@ The flag game is a physics-based mini-game integrated into the Swedish-Finnish t
 
 ### Speed System
 - **Base Speed**: Randomized on reset (0.7-1.9x, with rare 2.0x and extreme 100x)
+- **Visual Speed Cap**: Movement and display capped at 300 for optimal visibility
+- **Internal Speed**: Continues scaling beyond 300 for damage calculations
 - **Speed Boosts**: Temporary multipliers from flag clicks or green pins
 - **RIP Multiplier**: Every 1000 destroyed pins doubles base speed permanently
 - **Mobile Adjustment**: 30% speed in mobile portrait mode
@@ -28,9 +30,17 @@ The flag game is a physics-based mini-game integrated into the Swedish-Finnish t
 
 ### Warning System
 - **Speed Threshold**: Warning appears when speed > 500
+- **Extreme Speed Warning**: Red blinking warning when speed > 1000
 - **Reset Reminder**: "R = reset" text shows when speed ≤ 500
 - **Passive Damage**: Speed > 1000 damages all pins every 2 seconds
 - **Oneshot Mechanic**: Speed > 1000 instantly destroys red pins on collision
+
+### Damage System
+- **Base Damage**: 1 damage per collision at speeds 0-300
+- **Scaled Damage**: Increases every 300 speed units (600=2dmg, 900=3dmg, etc.)
+- **Visual Feedback**: Floating damage indicators show damage dealt and current speed
+- **Oneshot Override**: 1000+ speed deals maximum damage (instant kill)
+- **Physics Preservation**: All collisions trigger bounce physics before pin destruction
 
 ### Purple Pin Boss System
 - **Size**: 5x larger than standard red pins
@@ -120,6 +130,30 @@ The flag game is a physics-based mini-game integrated into the Swedish-Finnish t
 - **Extreme Speed Events**: 1% chance for 100x speed on reset
 - **Mobile Optimizations**: Automatic mode switching and speed adjustments
 
+## Current Implementation (v2.0)
+
+### Visual Speed Management
+The game now implements a dual-speed system to maintain optimal playability:
+
+- **Visual Cap**: Flag movement and speed display are capped at 300 units
+- **Internal Calculation**: True speed continues scaling for all game mechanics
+- **Smooth Progression**: Players see consistent visual speed while damage scales up
+- **High-Speed Feedback**: Damage indicators show internal speed values
+
+### Enhanced Collision System
+Recent improvements ensure consistent physics at all speed levels:
+
+- **Physics-First Processing**: Collision physics calculated before pin destruction
+- **Preserved Bouncing**: Oneshot kills maintain full bounce mechanics
+- **Damage Scaling**: Visual feedback shows escalating damage at high speeds
+- **Warning Escalation**: Red blinking alerts for extreme speed (1000+)
+
+### Player Experience Improvements
+- **Readable Speed**: Speed meter never exceeds 300 for visual clarity
+- **Damage Awareness**: Floating indicators show damage dealt per collision
+- **Consistent Physics**: Flag maintains pinball-like bouncing at all speeds
+- **Progressive Difficulty**: Damage scaling provides clear progression beyond speed cap
+
 ## Technical Notes
 
 ### Performance Considerations
@@ -134,6 +168,8 @@ The flag game is a physics-based mini-game integrated into the Swedish-Finnish t
 - Passive damage interval: 2 seconds
 - Warning threshold: 500 speed units
 - Oneshot threshold: 1000 speed units
+- Visual speed cap: 300 units (movement and display)
+- Damage scaling: Every 300 speed units increases damage by 1
 
 ### Purple Pin Technical Specs
 - **Health Points**: 50-100 HP (scales with player RIP level)
