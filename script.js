@@ -26,6 +26,15 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastPinY = 0;
     const pinSpacing = 18; // Distance between pins (14px pin + 4px gap)
     
+    // Enhanced pin placement variables
+    let mouseHoldStartTime = 0;
+    let holdTimerElement = null;
+    let isHoldingForEnhancedPin = false;
+    
+    // Anti-gravity effect variables
+    let antiGravityEndTime = 0;
+    let antiGravityActive = false;
+    
     // Trail effect variables
     let trailParticles = [];
     let lastTrailX = x;
@@ -147,29 +156,56 @@ document.addEventListener('DOMContentLoaded', () => {
             lastPinX = e.clientX;
             lastPinY = e.clientY;
             
-            // Create the first pin at mouse position
+            // Start hold timer for enhanced pins
+            mouseHoldStartTime = Date.now();
+            isHoldingForEnhancedPin = true;
+            
+            // Create hold timer visual
+            holdTimerElement = createHoldTimer(e.clientX, e.clientY);
+            
+            // Create the first pin at mouse position (regular pin initially)
             createPinAtPosition(e.clientX, e.clientY);
             
             e.preventDefault(); // Prevent text selection while dragging
         }
     });
 
-    function createPinAtPosition(x, y) {
+    function createPinAtPosition(x, y, pinType = 'regular') {
         const pin = document.createElement('div');
         pin.classList.add('pin');
+        
+        // Set pin properties based on type
+        switch(pinType) {
+            case 'heavy':
+                pin.classList.add('heavy-pin');
+                pin.collisionCount = 0;
+                pin.maxCollisions = 100; // 100 HP
+                pin.setAttribute('data-pin-type', 'heavy');
+                break;
+            case 'fortress':
+                pin.classList.add('fortress-pin');
+                pin.collisionCount = 0;
+                pin.maxCollisions = 200; // 200 HP
+                pin.setAttribute('data-pin-type', 'fortress');
+                break;
+            default:
+                pin.collisionCount = 0;
+                pin.maxCollisions = 10;
+                pin.setAttribute('data-pin-type', 'regular');
+        }
+        
         // Adjust position to center the pin on the cursor
         pin.style.left = (x - 5) + 'px';
         pin.style.top = (y - 5) + 'px';
         
-        // Add collision counter to the pin
-        pin.collisionCount = 0;
-        pin.maxCollisions = 10;
-        
-        // Add a data attribute for debugging
-        pin.setAttribute('data-pin-type', 'regular');
-        
         document.body.appendChild(pin);
         pins.push(pin);
+        
+        // Create health bar for enhanced pins
+        if (pinType === 'heavy' || pinType === 'fortress') {
+            createHealthBar(pin);
+        }
+        
         checkCollision(pin); // Check for collision immediately
 
         pin.addEventListener('mousedown', (e) => {
@@ -180,12 +216,125 @@ document.addEventListener('DOMContentLoaded', () => {
                 destroyedPinsCount++;
                 ripNumber.textContent = destroyedPinsCount.toString();
                 
+                // Remove health bar if it exists
+                if (pin.healthBar) {
+                    pin.healthBar.remove();
+                }
+                
                 pin.remove();
                 pins = pins.filter(p => p !== pin);
             }
         });
         
         return pin;
+    }
+    
+    function createHealthBar(pin) {
+        const healthBar = document.createElement('div');
+        healthBar.classList.add('health-bar');
+        
+        const healthFill = document.createElement('div');
+        healthFill.classList.add('health-fill');
+        healthBar.appendChild(healthFill);
+        
+        // Position health bar above the pin
+        const pinRect = pin.getBoundingClientRect();
+        healthBar.style.position = 'fixed';
+        healthBar.style.left = (pinRect.left - 5) + 'px';
+        healthBar.style.top = (pinRect.top - 15) + 'px';
+        healthBar.style.width = '20px';
+        healthBar.style.height = '4px';
+        healthBar.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+        healthBar.style.border = '1px solid rgba(255, 255, 255, 0.5)';
+        healthBar.style.zIndex = '1001';
+        
+        healthFill.style.width = '100%';
+        healthFill.style.height = '100%';
+        healthFill.style.backgroundColor = '#ff4444';
+        healthFill.style.transition = 'width 0.2s ease';
+        
+        document.body.appendChild(healthBar);
+        
+        // Store reference to health bar in pin
+        pin.healthBar = healthBar;
+        pin.healthFill = healthFill;
+        
+        return healthBar;
+    }
+    
+    function updateHealthBar(pin) {
+        if (!pin.healthBar || !pin.healthFill) return;
+        
+        const healthPercent = Math.max(0, (pin.maxCollisions - pin.collisionCount) / pin.maxCollisions);
+        pin.healthFill.style.width = (healthPercent * 100) + '%';
+        
+        // Update health bar position to follow pin
+        const pinRect = pin.getBoundingClientRect();
+        pin.healthBar.style.left = (pinRect.left - 5) + 'px';
+        pin.healthBar.style.top = (pinRect.top - 15) + 'px';
+        
+        // Change color based on health
+        if (healthPercent > 0.6) {
+            pin.healthFill.style.backgroundColor = '#44ff44';
+        } else if (healthPercent > 0.3) {
+            pin.healthFill.style.backgroundColor = '#ffaa44';
+        } else {
+            pin.healthFill.style.backgroundColor = '#ff4444';
+        }
+    }
+    
+    function createHoldTimer(x, y) {
+        const timer = document.createElement('div');
+        timer.classList.add('hold-timer');
+        timer.style.position = 'fixed';
+        timer.style.left = (x - 25) + 'px';
+        timer.style.top = (y - 25) + 'px';
+        timer.style.width = '50px';
+        timer.style.height = '50px';
+        timer.style.border = '3px solid rgba(255, 255, 255, 0.3)';
+        timer.style.borderRadius = '50%';
+        timer.style.pointerEvents = 'none';
+        timer.style.zIndex = '10000';
+        
+        const fill = document.createElement('div');
+        fill.classList.add('timer-fill');
+        fill.style.position = 'absolute';
+        fill.style.top = '0';
+        fill.style.left = '0';
+        fill.style.width = '100%';
+        fill.style.height = '100%';
+        fill.style.borderRadius = '50%';
+        fill.style.background = 'conic-gradient(#ffaa44 0deg, transparent 0deg)';
+        fill.style.transition = 'none';
+        
+        timer.appendChild(fill);
+        document.body.appendChild(timer);
+        
+        timer.fill = fill;
+        return timer;
+    }
+    
+    function updateHoldTimer(timer, progress, stage) {
+        if (!timer || !timer.fill) return;
+        
+        const degrees = Math.min(360, progress * 360);
+        
+        if (stage === 'heavy') {
+            timer.fill.style.background = `conic-gradient(#ffaa44 ${degrees}deg, transparent ${degrees}deg)`;
+            timer.style.borderColor = 'rgba(255, 170, 68, 0.8)';
+        } else if (stage === 'fortress') {
+            timer.fill.style.background = `conic-gradient(#aa4444 ${degrees}deg, transparent ${degrees}deg)`;
+            timer.style.borderColor = 'rgba(170, 68, 68, 0.8)';
+        } else if (stage === 'bomb') {
+            timer.fill.style.background = `conic-gradient(#ff0000 ${degrees}deg, transparent ${degrees}deg)`;
+            timer.style.borderColor = 'rgba(255, 0, 0, 1)';
+            timer.style.boxShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
+            
+            // Pulsing effect for bomb stage
+            if (progress > 0.8) {
+                timer.style.animation = 'bomb-warning 0.5s ease-in-out infinite alternate';
+            }
+        }
     }
 
 
@@ -302,6 +451,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Apply passive damage when speed > 1000
         applyPassiveDamage(currentSpeed);
+        
+        // Apply gravity well effects from black bosses
+        applyGravityWellEffects();
 
         // Bounce off the walls
         if (x <= 0 || x >= window.innerWidth - 100) {
@@ -324,9 +476,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Update and cleanup trail particles
         updateTrailParticles();
+        
+        // Update hold timer visual
+        if (isHoldingForEnhancedPin && holdTimerElement && mouseHoldStartTime > 0) {
+            const holdDuration = Date.now() - mouseHoldStartTime;
+            
+            if (holdDuration < 5000) {
+                // First 5 seconds - building to Heavy pin
+                const progress = holdDuration / 5000;
+                updateHoldTimer(holdTimerElement, progress, 'heavy');
+            } else if (holdDuration < 10000) {
+                // Next 5 seconds - building to Fortress pin
+                const progress = (holdDuration - 5000) / 5000;
+                updateHoldTimer(holdTimerElement, progress, 'fortress');
+            } else if (holdDuration < 30000) {
+                // Next 20 seconds - building to Bomb pin
+                const progress = (holdDuration - 10000) / 20000;
+                updateHoldTimer(holdTimerElement, progress, 'bomb');
+            } else {
+                // Completed - show full bomb timer
+                updateHoldTimer(holdTimerElement, 1, 'bomb');
+            }
+        }
 
         // Collision with pins
         pins.forEach(checkCollision);
+        
+        // Update boss pins
+        updateBossPins();
+        
+        // Check boss collisions
+        bossPins.forEach(boss => checkBossCollision(boss));
+        
+        // Try to spawn boss pins
+        spawnBossPin();
 
         flag.style.left = x + 'px';
         flag.style.top = y + 'px';
@@ -449,15 +632,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkCollision(pin) {
+        // Special handling for bomb pins
+        if (pin.classList && pin.classList.contains('bomb-pin') && pin.bombPin) {
+            return checkBombCollision(pin.bombPin);
+        }
+        
         const pinRect = pin.getBoundingClientRect();
         const flagRect = flag.getBoundingClientRect();
 
-        if (
-            flagRect.left < pinRect.right &&
+        // Check if flag and pin are colliding
+        if (flagRect.left < pinRect.right &&
             flagRect.right > pinRect.left &&
             flagRect.top < pinRect.bottom &&
-            flagRect.bottom > pinRect.top
-        ) {
+            flagRect.bottom > pinRect.top) {
             // Calculate centers for better collision detection
             const flagCenterX = x + 50; // flag width is 100px, so center is at x + 50
             const flagCenterY = y + 30; // flag height is 60px, so center is at y + 30
@@ -490,6 +677,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Apply damage
             pin.collisionCount = (pin.collisionCount || 0) + damage;
+            
+            // Update health bar for enhanced pins
+            if ((pin.classList.contains('heavy-pin') || pin.classList.contains('fortress-pin')) && !isGreenPin) {
+                updateHealthBar(pin);
+            }
             
             // Create damage indicator (only for regular pins)
             if (!isGreenPin) {
@@ -534,13 +726,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Special handling for green pins
             if (pin.classList.contains('green-pin')) {
-                // Green pin gives 300% speed boost and extends timer by 3 seconds
-                if (speedMultiplier < 3) {
-                    // If no boost or lower boost, start 300% boost
+                if (pin.classList.contains('anti-gravity-pin')) {
+                    // Anti-gravity pin gives speed boost AND anti-gravity effect
                     startSpeedBoost(3000, 3);
+                    startAntiGravityEffect(5000);
+                    console.log('🌟 Anti-gravity green pin activated!');
                 } else {
-                    // If already boosted, extend the timer by 3 seconds
-                    speedBoostEndTime += 3000;
+                    // Regular green pin gives 300% speed boost and extends timer by 3 seconds
+                    if (speedMultiplier < 3) {
+                        // If no boost or lower boost, start 300% boost
+                        startSpeedBoost(3000, 3);
+                    } else {
+                        // If already boosted, extend the timer by 3 seconds
+                        speedBoostEndTime += 3000;
+                    }
                 }
             }
 
@@ -559,6 +758,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 destroyedPinsCount++;
                 ripNumber.textContent = destroyedPinsCount.toString();
                 
+                // Remove health bar if it exists
+                if (pin.healthBar) {
+                    pin.healthBar.remove();
+                }
+                
                 pin.remove();
                 pins = pins.filter(p => p !== pin);
                 return; // Exit early since pin is removed
@@ -574,18 +778,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let dragOffsetX = 0;
     let dragOffsetY = 0;
 
-    function createDraggableGreenPin(x, y) {
+    function createDraggableGreenPin(x, y, isAntiGravity = false) {
         const greenPin = document.createElement('div');
         greenPin.classList.add('pin', 'green-pin');
+        
+        if (isAntiGravity) {
+            greenPin.classList.add('anti-gravity-pin');
+            greenPin.setAttribute('data-pin-type', 'anti-gravity');
+        } else {
+            greenPin.setAttribute('data-pin-type', 'green');
+        }
+        
         greenPin.style.left = (x - 5) + 'px';
         greenPin.style.top = (y - 5) + 'px';
         
         // Add collision counter to green pins too
         greenPin.collisionCount = 0;
         greenPin.maxCollisions = 10;
-        
-        // Add a data attribute for debugging
-        greenPin.setAttribute('data-pin-type', 'green');
         
         document.body.appendChild(greenPin);
         pins.push(greenPin);
@@ -594,6 +803,641 @@ document.addEventListener('DOMContentLoaded', () => {
         addGreenPinDragHandlers(greenPin);
         
         return greenPin;
+    }
+    
+    function applyGravityWellEffects() {
+        // Find active black bosses
+        const blackBosses = bossPins.filter(boss => boss.type === 'black' && !boss.isDestroyed);
+        
+        blackBosses.forEach(boss => {
+            const flagCenterX = x + 50;
+            const flagCenterY = y + 30;
+            
+            // Calculate distance to boss
+            const deltaX = boss.x - flagCenterX;
+            const deltaY = boss.y - flagCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            // Apply gravity if within radius
+            if (distance < boss.gravityRadius && distance > 0) {
+                // Calculate gravity strength (stronger when closer)
+                const gravityStrength = (boss.gravityRadius - distance) / boss.gravityRadius;
+                const pullForce = gravityStrength * 0.3; // Adjust this value to balance
+                
+                // Apply gravitational pull (but don't override anti-gravity)
+                if (!antiGravityActive) {
+                    const normalX = deltaX / distance;
+                    const normalY = deltaY / distance;
+                    
+                    dx += normalX * pullForce;
+                    dy += normalY * pullForce;
+                }
+            }
+        });
+        
+        // Handle anti-gravity effect
+        if (antiGravityActive && Date.now() > antiGravityEndTime) {
+            antiGravityActive = false;
+            console.log('Anti-gravity effect ended');
+        }
+    }
+    
+    function startAntiGravityEffect(duration = 5000) {
+        antiGravityActive = true;
+        antiGravityEndTime = Date.now() + duration;
+        console.log('Anti-gravity effect started for', duration / 1000, 'seconds');
+        
+        // Visual feedback - make flag glow
+        flag.style.filter = 'drop-shadow(0 0 10px #44ff44)';
+        
+        // Remove glow when effect ends
+        setTimeout(() => {
+            flag.style.filter = '';
+        }, duration);
+    }
+    
+    // Bomb Pin System
+    class BombPin {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.element = null;
+            this.healthBar = null;
+            this.healthFill = null;
+            this.timerElement = null;
+            this.timerFill = null;
+            this.collisionCount = 0;
+            this.maxCollisions = 5000; // 5000 HP
+            this.isDestroyed = false;
+            this.timeLeft = 30000; // 30 seconds in milliseconds
+            this.createdAt = Date.now();
+            
+            this.createElement();
+            this.createHealthBar();
+            this.createTimer();
+            
+            // Start countdown
+            this.startCountdown();
+        }
+        
+        createElement() {
+            this.element = document.createElement('div');
+            this.element.classList.add('pin', 'bomb-pin');
+            this.element.style.position = 'fixed';
+            this.element.style.width = '300px'; // 30x size (10px * 30)
+            this.element.style.height = '300px';
+            this.element.style.backgroundColor = '#000000';
+            this.element.style.border = '10px solid #ff0000';
+            this.element.style.borderRadius = '50%';
+            this.element.style.boxShadow = '0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3)';
+            this.element.style.zIndex = '1004';
+            this.element.style.left = (this.x - 150) + 'px'; // Center the 300px pin
+            this.element.style.top = (this.y - 150) + 'px';
+            this.element.style.animation = 'bomb-pulse 1s ease-in-out infinite alternate';
+            
+            // Add bomb symbol
+            const bombSymbol = document.createElement('div');
+            bombSymbol.textContent = '💣';
+            bombSymbol.style.position = 'absolute';
+            bombSymbol.style.top = '50%';
+            bombSymbol.style.left = '50%';
+            bombSymbol.style.transform = 'translate(-50%, -50%)';
+            bombSymbol.style.fontSize = '100px';
+            bombSymbol.style.pointerEvents = 'none';
+            
+            this.element.appendChild(bombSymbol);
+            this.element.bombPin = this;
+            
+            document.body.appendChild(this.element);
+        }
+        
+        createHealthBar() {
+            this.healthBar = document.createElement('div');
+            this.healthBar.classList.add('bomb-health-bar');
+            this.healthBar.style.position = 'fixed';
+            this.healthBar.style.width = '320px';
+            this.healthBar.style.height = '20px';
+            this.healthBar.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            this.healthBar.style.border = '3px solid #ff0000';
+            this.healthBar.style.borderRadius = '10px';
+            this.healthBar.style.zIndex = '1005';
+            this.healthBar.style.left = (this.x - 160) + 'px';
+            this.healthBar.style.top = (this.y - 200) + 'px';
+            
+            this.healthFill = document.createElement('div');
+            this.healthFill.style.width = '100%';
+            this.healthFill.style.height = '100%';
+            this.healthFill.style.backgroundColor = '#ff4444';
+            this.healthFill.style.borderRadius = '7px';
+            this.healthFill.style.transition = 'width 0.2s ease, background-color 0.3s ease';
+            
+            // Health text
+            const healthText = document.createElement('div');
+            healthText.style.position = 'absolute';
+            healthText.style.top = '50%';
+            healthText.style.left = '50%';
+            healthText.style.transform = 'translate(-50%, -50%)';
+            healthText.style.color = '#ffffff';
+            healthText.style.fontSize = '14px';
+            healthText.style.fontWeight = 'bold';
+            healthText.style.textShadow = '1px 1px 2px #000000';
+            healthText.textContent = '5000 / 5000 HP';
+            
+            this.healthBar.appendChild(this.healthFill);
+            this.healthBar.appendChild(healthText);
+            this.healthText = healthText;
+            
+            document.body.appendChild(this.healthBar);
+        }
+        
+        createTimer() {
+            this.timerElement = document.createElement('div');
+            this.timerElement.classList.add('bomb-timer');
+            this.timerElement.style.position = 'fixed';
+            this.timerElement.style.width = '320px';
+            this.timerElement.style.height = '20px';
+            this.timerElement.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+            this.timerElement.style.border = '3px solid #ffaa00';
+            this.timerElement.style.borderRadius = '10px';
+            this.timerElement.style.zIndex = '1005';
+            this.timerElement.style.left = (this.x - 160) + 'px';
+            this.timerElement.style.top = (this.y - 170) + 'px';
+            
+            this.timerFill = document.createElement('div');
+            this.timerFill.style.width = '100%';
+            this.timerFill.style.height = '100%';
+            this.timerFill.style.backgroundColor = '#ffaa00';
+            this.timerFill.style.borderRadius = '7px';
+            this.timerFill.style.transition = 'width 0.1s linear, background-color 0.3s ease';
+            
+            // Timer text
+            const timerText = document.createElement('div');
+            timerText.style.position = 'absolute';
+            timerText.style.top = '50%';
+            timerText.style.left = '50%';
+            timerText.style.transform = 'translate(-50%, -50%)';
+            timerText.style.color = '#ffffff';
+            timerText.style.fontSize = '14px';
+            timerText.style.fontWeight = 'bold';
+            timerText.style.textShadow = '1px 1px 2px #000000';
+            timerText.textContent = '30.0s';
+            
+            this.timerElement.appendChild(this.timerFill);
+            this.timerElement.appendChild(timerText);
+            this.timerText = timerText;
+            
+            document.body.appendChild(this.timerElement);
+        }
+        
+        startCountdown() {
+            const countdownInterval = setInterval(() => {
+                if (this.isDestroyed) {
+                    clearInterval(countdownInterval);
+                    return;
+                }
+                
+                this.timeLeft -= 100; // Update every 100ms
+                
+                if (this.timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    this.explode();
+                    return;
+                }
+                
+                this.updateTimer();
+                
+                // Increase urgency as time runs out
+                if (this.timeLeft < 10000) { // Last 10 seconds
+                    this.element.style.animation = 'bomb-critical 0.3s ease-in-out infinite alternate';
+                    this.timerFill.style.backgroundColor = '#ff0000';
+                } else if (this.timeLeft < 20000) { // Last 20 seconds
+                    this.element.style.animation = 'bomb-warning 0.5s ease-in-out infinite alternate';
+                    this.timerFill.style.backgroundColor = '#ff6600';
+                }
+            }, 100);
+        }
+        
+        updateTimer() {
+            if (!this.timerFill || !this.timerText) return;
+            
+            const timePercent = Math.max(0, this.timeLeft / 30000);
+            this.timerFill.style.width = (timePercent * 100) + '%';
+            
+            const seconds = (this.timeLeft / 1000).toFixed(1);
+            this.timerText.textContent = seconds + 's';
+        }
+        
+        updateHealthBar() {
+            if (!this.healthBar || !this.healthFill || !this.healthText) return;
+            
+            const healthPercent = Math.max(0, (this.maxCollisions - this.collisionCount) / this.maxCollisions);
+            this.healthFill.style.width = (healthPercent * 100) + '%';
+            
+            const currentHP = Math.max(0, this.maxCollisions - this.collisionCount);
+            this.healthText.textContent = `${currentHP} / ${this.maxCollisions} HP`;
+            
+            // Change color based on health
+            if (healthPercent > 0.6) {
+                this.healthFill.style.backgroundColor = '#44ff44';
+            } else if (healthPercent > 0.3) {
+                this.healthFill.style.backgroundColor = '#ffaa44';
+            } else {
+                this.healthFill.style.backgroundColor = '#ff4444';
+            }
+        }
+        
+        takeDamage(damage) {
+            // Bomb becomes more resilient as it takes damage (armor scaling)
+            const healthPercent = (this.maxCollisions - this.collisionCount) / this.maxCollisions;
+            let actualDamage = damage;
+            
+            // Reduce damage as bomb gets more damaged (desperation armor)
+            if (healthPercent < 0.5) { // Below 50% health
+                const armorReduction = (0.5 - healthPercent) * 0.6; // Up to 30% damage reduction
+                actualDamage = Math.ceil(damage * (1 - armorReduction));
+                
+                if (actualDamage < damage) {
+                    console.log(`🛡️ Bomb armor activated! Damage reduced from ${damage} to ${actualDamage} (${healthPercent.toFixed(1)*100}% HP remaining)`);
+                }
+            }
+            
+            // Apply the reduced damage
+            this.collisionCount += actualDamage;
+            this.updateHealthBar();
+            
+            // Visual feedback for armor activation
+            if (actualDamage < damage && healthPercent < 0.5) {
+                this.element.style.borderColor = '#ffffff';
+                setTimeout(() => {
+                    this.element.style.borderColor = '#ff0000';
+                }, 200);
+            }
+            
+            if (this.collisionCount >= this.maxCollisions) {
+                this.defuse();
+                return true; // Bomb defused
+            }
+            return false; // Bomb still active
+        }
+        
+        defuse() {
+            if (this.isDestroyed) return;
+            
+            this.isDestroyed = true;
+            bombActive = false;
+            levelComplete = true;
+            
+            console.log('💚 BOMB DEFUSED! LEVEL COMPLETE!');
+            
+            // Remove visual elements
+            this.destroy();
+            
+            // Show level complete screen
+            showLevelCompleteScreen();
+        }
+        
+        explode() {
+            if (this.isDestroyed) return;
+            
+            this.isDestroyed = true;
+            bombActive = false;
+            gameOver = true;
+            
+            console.log('💥 BOMB EXPLODED! GAME OVER!');
+            
+            // Create explosion effect
+            this.createExplosion();
+            
+            // Remove visual elements after explosion
+            setTimeout(() => {
+                this.destroy();
+                showGameOverScreen();
+            }, 2000);
+        }
+        
+        createExplosion() {
+            // Create multiple explosion particles
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.position = 'fixed';
+                particle.style.width = '10px';
+                particle.style.height = '10px';
+                particle.style.backgroundColor = Math.random() > 0.5 ? '#ff4444' : '#ffaa00';
+                particle.style.borderRadius = '50%';
+                particle.style.zIndex = '10000';
+                particle.style.left = this.x + 'px';
+                particle.style.top = this.y + 'px';
+                particle.style.pointerEvents = 'none';
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = 200 + Math.random() * 300;
+                const vx = Math.cos(angle) * speed;
+                const vy = Math.sin(angle) * speed;
+                
+                document.body.appendChild(particle);
+                
+                // Animate particle
+                let particleX = this.x;
+                let particleY = this.y;
+                const animateParticle = () => {
+                    particleX += vx * 0.016;
+                    particleY += vy * 0.016;
+                    
+                    particle.style.left = particleX + 'px';
+                    particle.style.top = particleY + 'px';
+                    particle.style.opacity = parseFloat(particle.style.opacity || 1) - 0.02;
+                    
+                    if (parseFloat(particle.style.opacity) > 0) {
+                        requestAnimationFrame(animateParticle);
+                    } else {
+                        particle.remove();
+                    }
+                };
+                
+                requestAnimationFrame(animateParticle);
+            }
+            
+            // Screen shake effect
+            document.body.style.animation = 'screen-shake 0.5s ease-in-out';
+            setTimeout(() => {
+                document.body.style.animation = '';
+            }, 500);
+        }
+        
+        destroy() {
+            if (this.element && this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
+            }
+            if (this.healthBar && this.healthBar.parentNode) {
+                this.healthBar.parentNode.removeChild(this.healthBar);
+            }
+            if (this.timerElement && this.timerElement.parentNode) {
+                this.timerElement.parentNode.removeChild(this.timerElement);
+            }
+        }
+    }
+    
+    function createBombPin(x, y) {
+        if (bombActive || gameOver || levelComplete) return; // Only one bomb at a time
+        
+        bombPin = new BombPin(x, y);
+        bombActive = true;
+        
+        // Add to pins array for collision detection
+        pins.push(bombPin.element);
+        
+        console.log('💣 BOMB PIN CREATED! 30 SECONDS TO DEFUSE!');
+    }
+
+    function checkBombCollision(bomb) {
+        if (!bomb || bomb.isDestroyed) return;
+        
+        const bombRect = bomb.element.getBoundingClientRect();
+        const flagRect = flag.getBoundingClientRect();
+        
+        // Check collision
+        if (flagRect.left < bombRect.right &&
+            flagRect.right > bombRect.left &&
+            flagRect.top < bombRect.bottom &&
+            flagRect.bottom > bombRect.top) {
+            
+            // Calculate collision physics similar to regular pins
+            const flagCenterX = x + 50;
+            const flagCenterY = y + 30;
+            const bombCenterX = bomb.x;
+            const bombCenterY = bomb.y;
+            
+            // Calculate current speed for damage
+            const mobileSpeedMultiplier = getMobileSpeedMultiplier();
+            const ripSpeedMultiplier = getRipSpeedMultiplier();
+            const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+            
+            // Calculate damage - bombs have special damage scaling to prevent oneshots
+            let damage = 1;
+            
+            // Bomb pins have capped damage to ensure intensive fights
+            if (currentSpeed > 300) {
+                const speedAbove300 = currentSpeed - 300;
+                // Much slower damage scaling for bombs - max ~50 damage per hit
+                damage = 1 + Math.floor(speedAbove300 / 500); 
+            }
+            
+            // Cap maximum damage per hit to prevent oneshots
+            if (currentSpeed > 1000) {
+                // Even extreme speeds are capped at reasonable damage
+                damage = Math.min(damage + 10, 50); // Max 50 damage per hit
+            }
+            
+            // Additional damage reduction for very high speeds to ensure fight longevity
+            if (currentSpeed > 5000) {
+                damage = Math.min(damage, 25); // Further cap for extreme speeds
+                console.log(`⚡ Extreme speed detected (${currentSpeed.toFixed(1)}) - damage capped at ${damage} for bomb balance`);
+            }
+            
+            // Apply damage to bomb
+            const destroyed = bomb.takeDamage(damage);
+            
+            // Create damage indicator
+            createDamageIndicator(bombCenterX, bombCenterY - 50, damage, currentSpeed);
+            
+            // Create sparks
+            createSparks(bombCenterX, bombCenterY);
+            
+            // Physics - bounce flag off bomb (larger bounce)
+            const deltaX = flagCenterX - bombCenterX;
+            const deltaY = flagCenterY - bombCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance > 0) {
+                // Normalize and apply bounce
+                const normalX = deltaX / distance;
+                const normalY = deltaY / distance;
+                
+                // Reflect velocity with more force
+                const dotProduct = dx * normalX + dy * normalY;
+                dx = dx - 2 * dotProduct * normalX;
+                dy = dy - 2 * dotProduct * normalY;
+                
+                // Push flag away from bomb (distance varies with time pressure)
+                const timePercent = bomb.timeLeft / 30000;
+                const basePushDistance = 180;
+                
+                // As time runs out, bomb becomes more "aggressive" with stronger pushback
+                const aggressionMultiplier = timePercent < 0.33 ? 1.5 : 1.0; // Last 10 seconds = stronger push
+                const pushDistance = basePushDistance * aggressionMultiplier;
+                
+                x = bombCenterX + normalX * pushDistance;
+                y = bombCenterY + normalY * pushDistance;
+                
+                if (aggressionMultiplier > 1.0) {
+                    console.log(`💥 Bomb aggression activated! Stronger pushback (${(bomb.timeLeft/1000).toFixed(1)}s remaining)`);
+                }
+                
+                // Keep flag in bounds
+                x = Math.max(0, Math.min(x, window.innerWidth - 100));
+                y = Math.max(0, Math.min(y, window.innerHeight - 60));
+            }
+        }
+    }
+
+    function showGameOverScreen() {
+        const gameOverScreen = document.createElement('div');
+        gameOverScreen.id = 'game-over-screen';
+        gameOverScreen.style.position = 'fixed';
+        gameOverScreen.style.top = '0';
+        gameOverScreen.style.left = '0';
+        gameOverScreen.style.width = '100%';
+        gameOverScreen.style.height = '100%';
+        gameOverScreen.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+        gameOverScreen.style.display = 'flex';
+        gameOverScreen.style.flexDirection = 'column';
+        gameOverScreen.style.justifyContent = 'center';
+        gameOverScreen.style.alignItems = 'center';
+        gameOverScreen.style.zIndex = '10001';
+        gameOverScreen.style.color = '#ffffff';
+        gameOverScreen.style.fontFamily = 'Poppins, sans-serif';
+        
+        const title = document.createElement('h1');
+        title.textContent = '💥 GAME OVER 💥';
+        title.style.fontSize = '4em';
+        title.style.color = '#ff4444';
+        title.style.marginBottom = '20px';
+        title.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+        title.style.animation = 'game-over-pulse 1s ease-in-out infinite alternate';
+        
+        const message = document.createElement('p');
+        message.textContent = 'The bomb exploded! Better luck next time.';
+        message.style.fontSize = '1.5em';
+        message.style.marginBottom = '30px';
+        message.style.textAlign = 'center';
+        
+        const stats = document.createElement('div');
+        stats.innerHTML = `
+            <p>Final Score: ${score}</p>
+            <p>RIP Count: ${destroyedPinsCount}</p>
+            <p>You survived until the bomb challenge!</p>
+        `;
+        stats.style.fontSize = '1.2em';
+        stats.style.textAlign = 'center';
+        stats.style.marginBottom = '30px';
+        
+        const restartButton = document.createElement('button');
+        restartButton.textContent = 'Restart Game';
+        restartButton.style.fontSize = '1.2em';
+        restartButton.style.padding = '15px 30px';
+        restartButton.style.backgroundColor = '#ff4444';
+        restartButton.style.color = '#ffffff';
+        restartButton.style.border = 'none';
+        restartButton.style.borderRadius = '10px';
+        restartButton.style.cursor = 'pointer';
+        restartButton.style.fontFamily = 'Poppins, sans-serif';
+        restartButton.style.fontWeight = 'bold';
+        
+        restartButton.addEventListener('click', () => {
+            location.reload();
+        });
+        
+        gameOverScreen.appendChild(title);
+        gameOverScreen.appendChild(message);
+        gameOverScreen.appendChild(stats);
+        gameOverScreen.appendChild(restartButton);
+        
+        document.body.appendChild(gameOverScreen);
+    }
+    
+    function showLevelCompleteScreen() {
+        const levelCompleteScreen = document.createElement('div');
+        levelCompleteScreen.id = 'level-complete-screen';
+        levelCompleteScreen.style.position = 'fixed';
+        levelCompleteScreen.style.top = '0';
+        levelCompleteScreen.style.left = '0';
+        levelCompleteScreen.style.width = '100%';
+        levelCompleteScreen.style.height = '100%';
+        levelCompleteScreen.style.backgroundColor = 'rgba(0, 50, 0, 0.9)';
+        levelCompleteScreen.style.display = 'flex';
+        levelCompleteScreen.style.flexDirection = 'column';
+        levelCompleteScreen.style.justifyContent = 'center';
+        levelCompleteScreen.style.alignItems = 'center';
+        levelCompleteScreen.style.zIndex = '10001';
+        levelCompleteScreen.style.color = '#ffffff';
+        levelCompleteScreen.style.fontFamily = 'Poppins, sans-serif';
+        
+        const title = document.createElement('h1');
+        title.textContent = '🎉 LEVEL COMPLETE! 🎉';
+        title.style.fontSize = '4em';
+        title.style.color = '#44ff44';
+        title.style.marginBottom = '20px';
+        title.style.textShadow = '2px 2px 4px rgba(0,0,0,0.8)';
+        title.style.animation = 'level-complete-pulse 1s ease-in-out infinite alternate';
+        
+        const message = document.createElement('p');
+        message.textContent = 'Congratulations! You successfully defused the bomb!';
+        message.style.fontSize = '1.5em';
+        message.style.marginBottom = '30px';
+        message.style.textAlign = 'center';
+        
+        const stats = document.createElement('div');
+        stats.innerHTML = `
+            <p>Final Score: ${score}</p>
+            <p>RIP Count: ${destroyedPinsCount}</p>
+            <p>You mastered Level 1!</p>
+        `;
+        stats.style.fontSize = '1.2em';
+        stats.style.textAlign = 'center';
+        stats.style.marginBottom = '30px';
+        
+        const buttonContainer = document.createElement('div');
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '20px';
+        
+        const continueButton = document.createElement('button');
+        continueButton.textContent = 'Continue Playing';
+        continueButton.style.fontSize = '1.2em';
+        continueButton.style.padding = '15px 30px';
+        continueButton.style.backgroundColor = '#44ff44';
+        continueButton.style.color = '#000000';
+        continueButton.style.border = 'none';
+        continueButton.style.borderRadius = '10px';
+        continueButton.style.cursor = 'pointer';
+        continueButton.style.fontFamily = 'Poppins, sans-serif';
+        continueButton.style.fontWeight = 'bold';
+        
+        const nextLevelButton = document.createElement('button');
+        nextLevelButton.textContent = 'Next Level (Coming Soon)';
+        nextLevelButton.style.fontSize = '1.2em';
+        nextLevelButton.style.padding = '15px 30px';
+        nextLevelButton.style.backgroundColor = '#ffaa44';
+        nextLevelButton.style.color = '#000000';
+        nextLevelButton.style.border = 'none';
+        nextLevelButton.style.borderRadius = '10px';
+        nextLevelButton.style.cursor = 'pointer';
+        nextLevelButton.style.fontFamily = 'Poppins, sans-serif';
+        nextLevelButton.style.fontWeight = 'bold';
+        nextLevelButton.style.opacity = '0.6';
+        nextLevelButton.disabled = true;
+        
+        continueButton.addEventListener('click', () => {
+            // Reset bomb state and continue playing
+            gameOver = false;
+            levelComplete = false;
+            bombActive = false;
+            bombPin = null;
+            
+            // Remove the screen
+            levelCompleteScreen.remove();
+            
+            console.log('🎮 Continuing to play after level completion!');
+        });
+        
+        buttonContainer.appendChild(continueButton);
+        buttonContainer.appendChild(nextLevelButton);
+        
+        levelCompleteScreen.appendChild(title);
+        levelCompleteScreen.appendChild(message);
+        levelCompleteScreen.appendChild(stats);
+        levelCompleteScreen.appendChild(buttonContainer);
+        
+        document.body.appendChild(levelCompleteScreen);
     }
 
     function addGreenPinDragHandlers(greenPin) {
@@ -703,6 +1547,33 @@ document.addEventListener('DOMContentLoaded', () => {
         // Handle drag-to-place-pins functionality
         if (e.button === 0) {
             isMouseDragging = false;
+            
+            // Handle enhanced pin creation based on hold duration
+            if (isHoldingForEnhancedPin && mouseHoldStartTime > 0) {
+                const holdDuration = Date.now() - mouseHoldStartTime;
+                
+                // Remove hold timer visual
+                if (holdTimerElement) {
+                    holdTimerElement.remove();
+                    holdTimerElement = null;
+                }
+                
+                // Create enhanced pin if held long enough
+                if (holdDuration >= 30000) { // 30 seconds for Bomb pin
+                    createBombPin(lastPinX, lastPinY);
+                    console.log('💣 BOMB PIN ACTIVATED! (30+ second hold)');
+                } else if (holdDuration >= 10000) { // 10 seconds for Fortress pin
+                    createPinAtPosition(lastPinX, lastPinY, 'fortress');
+                    console.log('Created Fortress Red Pin (10+ second hold)');
+                } else if (holdDuration >= 5000) { // 5 seconds for Heavy pin
+                    createPinAtPosition(lastPinX, lastPinY, 'heavy');
+                    console.log('Created Heavy Red Pin (5+ second hold)');
+                }
+                
+                // Reset hold variables
+                isHoldingForEnhancedPin = false;
+                mouseHoldStartTime = 0;
+            }
         }
     });
 
@@ -733,6 +1604,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Flag mode toggle
     let isFlagMode = false;
+    
+    // Boss pin system
+    let bossPins = [];
+    let lastBossSpawnRIP = 0;
+    let activeBossPin = null;
+    
+    // Bomb pin system
+    let bombPin = null;
+    let bombTimer = 0;
+    let bombActive = false;
+    let gameOver = false;
+    let levelComplete = false;
     
     // Function to generate weighted random speed for flag reset
     function getRandomFlagSpeed() {
@@ -777,6 +1660,492 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         return ripMultiplier;
+    }
+    
+    // Boss Pin Classes and Functions
+    class BossPin {
+        constructor(type, x, y, targetX, targetY) {
+            this.type = type;
+            this.x = x;
+            this.y = y;
+            this.targetX = targetX;
+            this.targetY = targetY;
+            this.element = null;
+            this.healthBar = null;
+            this.healthFill = null;
+            this.collisionCount = 0;
+            this.isDestroyed = false;
+            this.createdAt = Date.now();
+            
+            // Type-specific properties
+            this.setupTypeProperties();
+            this.createElement();
+            this.createHealthBar();
+        }
+        
+        setupTypeProperties() {
+            switch(this.type) {
+                case 'purple':
+                    this.maxCollisions = 75;
+                    this.speed = 1;
+                    this.color = '#8844ff';
+                    this.reward = 1; // green pins
+                    break;
+                case 'orange':
+                    this.maxCollisions = 75;
+                    this.speed = 0.8;
+                    this.color = '#ff8844';
+                    this.reward = 4; // splits into mini-bosses
+                    break;
+                case 'red':
+                    this.maxCollisions = 100;
+                    this.speed = 0.6;
+                    this.color = '#ff4444';
+                    this.reward = 3;
+                    this.rageMultiplier = 1;
+                    break;
+                case 'black':
+                    this.maxCollisions = 80;
+                    this.speed = 0.5;
+                    this.color = '#444444';
+                    this.reward = 1; // special anti-gravity pin
+                    this.gravityRadius = 150;
+                    break;
+            }
+        }
+        
+        createElement() {
+            this.element = document.createElement('div');
+            this.element.classList.add('pin', 'boss-pin', `${this.type}-boss`);
+            this.element.style.position = 'fixed';
+            this.element.style.width = '50px';
+            this.element.style.height = '50px';
+            this.element.style.backgroundColor = this.color;
+            this.element.style.border = '4px solid #fff';
+            this.element.style.borderRadius = '50%';
+            this.element.style.boxShadow = `0 0 20px ${this.color}`;
+            this.element.style.zIndex = '1002';
+            this.element.style.left = (this.x - 25) + 'px';
+            this.element.style.top = (this.y - 25) + 'px';
+            
+            // Store reference to boss instance
+            this.element.bossPin = this;
+            
+            document.body.appendChild(this.element);
+        }
+        
+        createHealthBar() {
+            this.healthBar = document.createElement('div');
+            this.healthBar.classList.add('boss-health-bar');
+            this.healthBar.style.position = 'fixed';
+            this.healthBar.style.width = '60px';
+            this.healthBar.style.height = '8px';
+            this.healthBar.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+            this.healthBar.style.border = '2px solid rgba(255, 255, 255, 0.7)';
+            this.healthBar.style.borderRadius = '4px';
+            this.healthBar.style.zIndex = '1003';
+            
+            this.healthFill = document.createElement('div');
+            this.healthFill.style.width = '100%';
+            this.healthFill.style.height = '100%';
+            this.healthFill.style.backgroundColor = '#44ff44';
+            this.healthFill.style.borderRadius = '2px';
+            this.healthFill.style.transition = 'width 0.3s ease, background-color 0.3s ease';
+            
+            this.healthBar.appendChild(this.healthFill);
+            document.body.appendChild(this.healthBar);
+            
+            this.updateHealthBar();
+        }
+        
+        updateHealthBar() {
+            if (!this.healthBar || !this.healthFill) return;
+            
+            const healthPercent = Math.max(0, (this.maxCollisions - this.collisionCount) / this.maxCollisions);
+            this.healthFill.style.width = (healthPercent * 100) + '%';
+            
+            // Position above boss pin
+            this.healthBar.style.left = (this.x - 30) + 'px';
+            this.healthBar.style.top = (this.y - 45) + 'px';
+            
+            // Change color based on health
+            if (healthPercent > 0.6) {
+                this.healthFill.style.backgroundColor = '#44ff44';
+            } else if (healthPercent > 0.3) {
+                this.healthFill.style.backgroundColor = '#ffaa44';
+            } else {
+                this.healthFill.style.backgroundColor = '#ff4444';
+            }
+        }
+        
+        update() {
+            if (this.isDestroyed) return;
+            
+            // Update position based on type
+            this.updateMovement();
+            
+            // Red boss destroys player pins it touches
+            if (this.type === 'red') {
+                this.checkPinDestruction();
+            }
+            
+            // Update visual position
+            this.element.style.left = (this.x - 25) + 'px';
+            this.element.style.top = (this.y - 25) + 'px';
+            
+            // Update health bar
+            this.updateHealthBar();
+            
+            // Check if boss should be removed (off screen)
+            if (this.x < -100 || this.x > window.innerWidth + 100 || 
+                this.y < -100 || this.y > window.innerHeight + 100) {
+                this.destroy(false); // Don't give reward for escaping
+            }
+        }
+        
+        checkPinDestruction() {
+            // Only red bosses destroy pins
+            if (this.type !== 'red') return;
+            
+            pins.forEach(pin => {
+                if (pin.classList.contains('green-pin')) return; // Don't destroy green pins
+                
+                const pinRect = pin.getBoundingClientRect();
+                const bossRect = this.element.getBoundingClientRect();
+                
+                // Check collision with pin
+                if (bossRect.left < pinRect.right &&
+                    bossRect.right > pinRect.left &&
+                    bossRect.top < pinRect.bottom &&
+                    bossRect.bottom > pinRect.top) {
+                    
+                    // Destroy the pin
+                    destroyedPinsCount++;
+                    ripNumber.textContent = destroyedPinsCount.toString();
+                    
+                    // Remove health bar if it exists
+                    if (pin.healthBar) {
+                        pin.healthBar.remove();
+                    }
+                    
+                    // Create destruction sparks
+                    const pinCenterX = pinRect.left + pinRect.width / 2;
+                    const pinCenterY = pinRect.top + pinRect.height / 2;
+                    createSparks(pinCenterX, pinCenterY);
+                    
+                    pin.remove();
+                    pins = pins.filter(p => p !== pin);
+                    
+                    console.log('🔥 Red boss destroyed a player pin!');
+                }
+            });
+        }
+        
+        updateMovement() {
+            // Calculate direction to target
+            const dx = this.targetX - this.x;
+            const dy = this.targetY - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance > 1) {
+                // Normalize direction and apply speed
+                let currentSpeed = this.speed;
+                
+                // Red boss gets faster as it takes damage (rage mechanic)
+                if (this.type === 'red') {
+                    const damagePercent = this.collisionCount / this.maxCollisions;
+                    this.rageMultiplier = 1 + (damagePercent * 2); // Up to 3x speed when near death
+                    currentSpeed *= this.rageMultiplier;
+                }
+                
+                this.x += (dx / distance) * currentSpeed;
+                this.y += (dy / distance) * currentSpeed;
+            }
+        }
+        
+        takeDamage(damage) {
+            this.collisionCount += damage;
+            this.updateHealthBar();
+            
+            if (this.collisionCount >= this.maxCollisions) {
+                this.destroy(true); // Give reward
+                return true; // Boss destroyed
+            }
+            return false; // Boss still alive
+        }
+        
+        destroy(giveReward = true) {
+            if (this.isDestroyed) return;
+            
+            this.isDestroyed = true;
+            
+            if (giveReward) {
+                this.giveReward();
+            }
+            
+            // Remove visual elements
+            if (this.element && this.element.parentNode) {
+                this.element.parentNode.removeChild(this.element);
+            }
+            if (this.healthBar && this.healthBar.parentNode) {
+                this.healthBar.parentNode.removeChild(this.healthBar);
+            }
+            
+            // Remove from boss pins array
+            bossPins = bossPins.filter(boss => boss !== this);
+            if (activeBossPin === this) {
+                activeBossPin = null;
+            }
+            
+            console.log(`🏆 ${this.type.toUpperCase()} BOSS DEFEATED!`);
+        }
+        
+        giveReward() {
+            switch(this.type) {
+                case 'purple':
+                    // Drop 1 green pin
+                    createDraggableGreenPin(this.x, this.y);
+                    break;
+                case 'orange':
+                    // Split into mini-bosses (implement later)
+                    this.createMiniBosses();
+                    break;
+                case 'red':
+                    // Drop 3 green pins
+                    for (let i = 0; i < 3; i++) {
+                        const angle = (i / 3) * Math.PI * 2;
+                        const distance = 30;
+                        const dropX = this.x + Math.cos(angle) * distance;
+                        const dropY = this.y + Math.sin(angle) * distance;
+                        createDraggableGreenPin(dropX, dropY);
+                    }
+                    break;
+                case 'black':
+                    // Drop special anti-gravity green pin
+                    createDraggableGreenPin(this.x, this.y, true);
+                    break;
+            }
+        }
+        
+        createMiniBosses() {
+            // Create 3-4 mini-bosses for orange splitter
+            const miniCount = 3 + Math.floor(Math.random() * 2);
+            for (let i = 0; i < miniCount; i++) {
+                const angle = (i / miniCount) * Math.PI * 2;
+                const distance = 60;
+                const miniX = this.x + Math.cos(angle) * distance;
+                const miniY = this.y + Math.sin(angle) * distance;
+                
+                // Create mini-boss (smaller, faster, less health)
+                const miniBoss = new MiniBoss(miniX, miniY);
+                bossPins.push(miniBoss);
+            }
+        }
+    }
+    
+    class MiniBoss extends BossPin {
+        constructor(x, y) {
+            // Random target for erratic movement
+            const targetX = Math.random() * window.innerWidth;
+            const targetY = Math.random() * window.innerHeight;
+            
+            super('mini', x, y, targetX, targetY);
+        }
+        
+        setupTypeProperties() {
+            this.maxCollisions = 25;
+            this.speed = 2; // Faster than regular bosses
+            this.color = '#ff6622';
+            this.reward = 1;
+        }
+        
+        createElement() {
+            this.element = document.createElement('div');
+            this.element.classList.add('pin', 'mini-boss');
+            this.element.style.position = 'fixed';
+            this.element.style.width = '20px';
+            this.element.style.height = '20px';
+            this.element.style.backgroundColor = this.color;
+            this.element.style.border = '2px solid #fff';
+            this.element.style.borderRadius = '50%';
+            this.element.style.boxShadow = `0 0 10px ${this.color}`;
+            this.element.style.zIndex = '1002';
+            this.element.style.left = (this.x - 10) + 'px';
+            this.element.style.top = (this.y - 10) + 'px';
+            
+            this.element.bossPin = this;
+            document.body.appendChild(this.element);
+        }
+        
+        updateMovement() {
+            // Erratic movement - change target occasionally
+            if (Math.random() < 0.02) { // 2% chance per frame to change direction
+                this.targetX = Math.random() * window.innerWidth;
+                this.targetY = Math.random() * window.innerHeight;
+            }
+            
+            super.updateMovement();
+        }
+        
+        update() {
+            if (this.isDestroyed) return;
+            
+            this.updateMovement();
+            
+            // Update visual position (smaller size)
+            this.element.style.left = (this.x - 10) + 'px';
+            this.element.style.top = (this.y - 10) + 'px';
+            
+            this.updateHealthBar();
+            
+            // Check if mini-boss should be removed (off screen)
+            if (this.x < -50 || this.x > window.innerWidth + 50 || 
+                this.y < -50 || this.y > window.innerHeight + 50) {
+                this.destroy(false);
+            }
+        }
+        
+        giveReward() {
+            // Each mini-boss drops 1 green pin
+            createDraggableGreenPin(this.x, this.y);
+        }
+    }
+    
+    function spawnBossPin() {
+        // Don't spawn if there's already an active boss
+        if (activeBossPin && !activeBossPin.isDestroyed) return;
+        
+        // Check if we should spawn based on RIP count
+        const ripsSinceLastBoss = destroyedPinsCount - lastBossSpawnRIP;
+        if (ripsSinceLastBoss < 2000) return; // Need 2000 RIP between bosses
+        
+        // Random boss type
+        const bossTypes = ['purple', 'orange', 'red', 'black'];
+        const bossType = bossTypes[Math.floor(Math.random() * bossTypes.length)];
+        
+        // Random spawn location (edge of screen)
+        const side = Math.floor(Math.random() * 4); // 0=top, 1=right, 2=bottom, 3=left
+        let startX, startY, targetX, targetY;
+        
+        switch(side) {
+            case 0: // Top
+                startX = Math.random() * window.innerWidth;
+                startY = -50;
+                targetX = Math.random() * window.innerWidth;
+                targetY = window.innerHeight + 50;
+                break;
+            case 1: // Right
+                startX = window.innerWidth + 50;
+                startY = Math.random() * window.innerHeight;
+                targetX = -50;
+                targetY = Math.random() * window.innerHeight;
+                break;
+            case 2: // Bottom
+                startX = Math.random() * window.innerWidth;
+                startY = window.innerHeight + 50;
+                targetX = Math.random() * window.innerWidth;
+                targetY = -50;
+                break;
+            case 3: // Left
+                startX = -50;
+                startY = Math.random() * window.innerHeight;
+                targetX = window.innerWidth + 50;
+                targetY = Math.random() * window.innerHeight;
+                break;
+        }
+        
+        const boss = new BossPin(bossType, startX, startY, targetX, targetY);
+        bossPins.push(boss);
+        activeBossPin = boss;
+        lastBossSpawnRIP = destroyedPinsCount;
+        
+        console.log(`👹 ${bossType.toUpperCase()} BOSS SPAWNED! RIP: ${destroyedPinsCount}`);
+    }
+    
+    function updateBossPins() {
+        bossPins.forEach(boss => {
+            if (!boss.isDestroyed) {
+                boss.update();
+            }
+        });
+        
+        // Clean up destroyed bosses
+        bossPins = bossPins.filter(boss => !boss.isDestroyed);
+    }
+    
+    function checkBossCollision(boss) {
+        if (!boss || boss.isDestroyed) return;
+        
+        const bossRect = boss.element.getBoundingClientRect();
+        const flagRect = flag.getBoundingClientRect();
+        
+        // Check collision
+        if (flagRect.left < bossRect.right &&
+            flagRect.right > bossRect.left &&
+            flagRect.top < bossRect.bottom &&
+            flagRect.bottom > bossRect.top) {
+            
+            // Calculate collision physics similar to regular pins
+            const flagCenterX = x + 50;
+            const flagCenterY = y + 30;
+            const bossCenterX = boss.x;
+            const bossCenterY = boss.y;
+            
+            // Calculate current speed for damage
+            const mobileSpeedMultiplier = getMobileSpeedMultiplier();
+            const ripSpeedMultiplier = getRipSpeedMultiplier();
+            const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
+            
+            // Calculate damage
+            let damage = 1;
+            if (currentSpeed > 300) {
+                const speedAbove300 = currentSpeed - 300;
+                damage = 1 + Math.floor(speedAbove300 / 300);
+            }
+            if (currentSpeed > 1000) {
+                damage = Math.max(damage, 10); // High speed bonus damage
+            }
+            
+            // Apply damage to boss
+            const destroyed = boss.takeDamage(damage);
+            
+            // Create damage indicator
+            createDamageIndicator(bossCenterX, bossCenterY - 30, damage, currentSpeed);
+            
+            // Create sparks
+            createSparks(bossCenterX, bossCenterY);
+            
+            // Physics - bounce flag off boss
+            const deltaX = flagCenterX - bossCenterX;
+            const deltaY = flagCenterY - bossCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance > 0) {
+                // Normalize and apply bounce
+                const normalX = deltaX / distance;
+                const normalY = deltaY / distance;
+                
+                // Reflect velocity
+                const dotProduct = dx * normalX + dy * normalY;
+                dx = dx - 2 * dotProduct * normalX;
+                dy = dy - 2 * dotProduct * normalY;
+                
+                // Push flag away from boss
+                const pushDistance = 60; // Larger push for bosses
+                x = bossCenterX + normalX * pushDistance;
+                y = bossCenterY + normalY * pushDistance;
+                
+                // Keep flag in bounds
+                x = Math.max(0, Math.min(x, window.innerWidth - 100));
+                y = Math.max(0, Math.min(y, window.innerHeight - 60));
+            }
+            
+            if (destroyed) {
+                // Increment RIP counter for boss destruction
+                destroyedPinsCount += 10; // Bosses are worth more RIP
+                ripNumber.textContent = destroyedPinsCount.toString();
+            }
+        }
     }
     
     // Function to apply passive damage to pins when speed > 1000

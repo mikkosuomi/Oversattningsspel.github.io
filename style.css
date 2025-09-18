@@ -657,3 +657,232 @@ button {
         margin: 10px 0;
     }
 }
+
+/* Enhanced Pin Styles */
+.heavy-pin {
+    width: 20px !important;
+    height: 20px !important;
+    background-color: #cc2222 !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 0 12px #cc2222 !important;
+}
+
+.fortress-pin {
+    width: 20px !important;
+    height: 20px !important;
+    background-color: #881111 !important;
+    border: 3px solid #fff !important;
+    box-shadow: 0 0 15px #881111 !important;
+}
+
+/* Health Bar Styles */
+.health-bar {
+    position: fixed;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 2px;
+    z-index: 1001;
+}
+
+.health-fill {
+    background-color: #ff4444;
+    border-radius: 1px;
+    transition: width 0.2s ease, background-color 0.3s ease;
+}
+
+/* Hold Timer Styles */
+.hold-timer {
+    position: fixed;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 10000;
+    animation: pulse-timer 1s ease-in-out infinite alternate;
+}
+
+.timer-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    transition: none;
+}
+
+@keyframes pulse-timer {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+/* Boss Pin Styles */
+.boss-pin {
+    width: 50px !important;
+    height: 50px !important;
+    border: 4px solid #fff !important;
+    animation: boss-pulse 2s ease-in-out infinite alternate;
+}
+
+.purple-boss {
+    background-color: #8844ff !important;
+    box-shadow: 0 0 20px #8844ff !important;
+}
+
+.orange-boss {
+    background-color: #ff8844 !important;
+    box-shadow: 0 0 20px #ff8844 !important;
+}
+
+.red-boss {
+    background-color: #ff4444 !important;
+    box-shadow: 0 0 20px #ff4444 !important;
+}
+
+.black-boss {
+    background-color: #444444 !important;
+    box-shadow: 0 0 20px #666666 !important;
+}
+
+.mini-boss {
+    width: 20px !important;
+    height: 20px !important;
+    background-color: #ff6622 !important;
+    border: 2px solid #fff !important;
+    box-shadow: 0 0 10px #ff6622 !important;
+    animation: mini-boss-spin 1s linear infinite;
+}
+
+/* Boss Health Bar Styles */
+.boss-health-bar {
+    position: fixed;
+    width: 60px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 4px;
+    z-index: 1003;
+}
+
+@keyframes boss-pulse {
+    0% {
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    100% {
+        transform: scale(1.05);
+        filter: brightness(1.2);
+    }
+}
+
+@keyframes mini-boss-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Anti-gravity Pin Styles */
+.anti-gravity-pin {
+    background: radial-gradient(circle, #44ff44, #22aa22) !important;
+    box-shadow: 0 0 15px #44ff44, 0 0 30px rgba(68, 255, 68, 0.3) !important;
+    animation: anti-gravity-pulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes anti-gravity-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 15px #44ff44, 0 0 30px rgba(68, 255, 68, 0.3);
+    }
+    100% {
+        transform: scale(1.2);
+        box-shadow: 0 0 20px #44ff44, 0 0 40px rgba(68, 255, 68, 0.5);
+    }
+}
+
+/* Bomb Pin Styles */
+.bomb-pin {
+    width: 300px !important;
+    height: 300px !important;
+    background-color: #000000 !important;
+    border: 10px solid #ff0000 !important;
+    box-shadow: 0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3) !important;
+    animation: bomb-pulse 1s ease-in-out infinite alternate;
+}
+
+@keyframes bomb-pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3);
+    }
+    100% {
+        transform: scale(1.02);
+        box-shadow: 0 0 60px #ff0000, inset 0 0 60px rgba(255, 0, 0, 0.4);
+    }
+}
+
+@keyframes bomb-warning {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3);
+        border-color: #ff0000;
+    }
+    100% {
+        transform: scale(1.05);
+        box-shadow: 0 0 70px #ff6600, inset 0 0 70px rgba(255, 102, 0, 0.5);
+        border-color: #ff6600;
+    }
+}
+
+@keyframes bomb-critical {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3);
+        border-color: #ff0000;
+    }
+    100% {
+        transform: scale(1.1);
+        box-shadow: 0 0 80px #ff0000, inset 0 0 80px rgba(255, 0, 0, 0.6);
+        border-color: #ffffff;
+    }
+}
+
+@keyframes screen-shake {
+    0%, 100% { transform: translateX(0); }
+    10% { transform: translateX(-5px); }
+    20% { transform: translateX(5px); }
+    30% { transform: translateX(-3px); }
+    40% { transform: translateX(3px); }
+    50% { transform: translateX(-2px); }
+    60% { transform: translateX(2px); }
+    70% { transform: translateX(-1px); }
+    80% { transform: translateX(1px); }
+    90% { transform: translateX(0); }
+}
+
+@keyframes game-over-pulse {
+    0% {
+        transform: scale(1);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    100% {
+        transform: scale(1.05);
+        text-shadow: 4px 4px 8px rgba(255, 68, 68, 0.8);
+    }
+}
+
+@keyframes level-complete-pulse {
+    0% {
+        transform: scale(1);
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    100% {
+        transform: scale(1.05);
+        text-shadow: 4px 4px 8px rgba(68, 255, 68, 0.8);
+    }
+}
