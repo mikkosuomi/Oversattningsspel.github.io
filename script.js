@@ -269,11 +269,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentSpeed = Math.sqrt(dx * dx + dy * dy) * speedMultiplier * baseSpeedMultiplier * mobileSpeedMultiplier * ripSpeedMultiplier;
         speedNumber.textContent = currentSpeed.toFixed(1);
         
-        // Show/hide warning based on speed
+        // Show/hide warning and reset text based on speed
         if (currentSpeed > 500) {
             warningContainer.style.display = 'block';
+            warningText.style.display = 'inline';
+            resetText.style.display = 'none';
         } else {
-            warningContainer.style.display = 'none';
+            warningContainer.style.display = 'block';
+            warningText.style.display = 'none';
+            resetText.style.display = 'inline';
         }
         
         // Apply passive damage when speed > 1000
@@ -634,6 +638,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sweFlag = document.getElementById('swe-flag');
     const speedNumber = document.getElementById('speed-number');
     const warningContainer = document.getElementById('warning-container');
+    const warningText = document.getElementById('warning-text');
+    const resetText = document.getElementById('reset-text');
     const ripNumber = document.getElementById('rip-number');
     
     // Initialize RIP counter

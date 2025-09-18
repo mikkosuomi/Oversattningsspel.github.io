@@ -285,6 +285,17 @@ body.flag-mode #score-container {
     animation: blink-warning 0.8s infinite;
 }
 
+#reset-text {
+    color: #90e0ef;
+    font-weight: 400;
+    font-size: 0.8em;
+    text-shadow: 0 0 4px #90e0ef;
+    opacity: 0.8;
+    display: none; /* Initially hidden, will be shown by JavaScript */
+    position: relative;
+    top: -2px; /* Move slightly higher */
+}
+
 @keyframes blink-warning {
     0%, 50% {
         opacity: 1;
