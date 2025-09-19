@@ -221,23 +221,19 @@ async function fetchSentencesFromGoogleSheets() {
         const sentences = [];
         const rows = data.table.rows;
         
-        // Parse rows - each row contains "Swedish | Finnish" format in first column
+        // Parse rows - Column A = Swedish, Column B = Finnish
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
-            if (row.c && row.c[0] && row.c[0].v) {
-                const cellValue = row.c[0].v.toString();
+            if (row.c && row.c.length >= 2) {
+                const swedish = row.c[0]?.v || '';
+                const finnish = row.c[1]?.v || '';
                 
-                // Split by " | " to separate Swedish and Finnish
-                if (cellValue.includes(' | ')) {
-                    const [swedish, finnish] = cellValue.split(' | ');
-                    
-                    // Only add rows with both Swedish and Finnish text
-                    if (swedish && swedish.trim() && finnish && finnish.trim()) {
-                        sentences.push({
-                            swedish: swedish.trim(),
-                            finnish: finnish.trim()
-                        });
-                    }
+                // Only add rows with both Swedish and Finnish text
+                if (swedish.toString().trim() && finnish.toString().trim()) {
+                    sentences.push({
+                        swedish: swedish.toString().trim(),
+                        finnish: finnish.toString().trim()
+                    });
                 }
             }
         }
