@@ -917,6 +917,19 @@ button {
     }
 }
 
+@keyframes boss-magnetic {
+    0% {
+        transform: scale(1);
+        border-color: #ffff00;
+        box-shadow: 0 0 15px currentColor, 0 0 30px rgba(255, 255, 0, 0.5);
+    }
+    100% {
+        transform: scale(1.1);
+        border-color: #ffffff;
+        box-shadow: 0 0 25px currentColor, 0 0 50px rgba(255, 255, 0, 0.8);
+    }
+}
+
 @keyframes level-complete-pulse {
     0% {
         transform: scale(1);
@@ -933,6 +946,13 @@ button {
     background-color: #8B4513 !important; /* Saddle brown */
     border: 2px solid #D2B48C !important; /* Tan border */
     box-shadow: 0 0 8px #8B4513 !important;
+}
+
+/* Iron Pin Styles */
+.iron-pin {
+    background-color: #708090 !important; /* Slate gray */
+    border: 2px solid #C0C0C0 !important; /* Silver border */
+    box-shadow: 0 0 10px #708090 !important;
 }
 
 /* Shop Modal Styles */
