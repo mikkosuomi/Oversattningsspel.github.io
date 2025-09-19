@@ -179,24 +179,33 @@ body.flag-mode #button-controls {
 body.flag-mode #speed-container {
     position: static;
     order: 1;
-    margin-right: 25px;
-    min-width: 80px;
+    margin-right: 15px;
+    min-width: 70px;
+}
+
+body.flag-mode #shop-container {
+    position: static;
+    order: 2;
+    margin-right: 15px;
+    transform: none;
 }
 
 body.flag-mode #warning-container {
     position: static;
-    order: 2;
-    margin: 0 20px;
+    order: 3;
+    margin: 0 15px;
+    transform: none;
 }
 
 body.flag-mode #rip-container {
     position: static;
-    order: 3;
+    order: 4;
+    margin-right: 15px;
 }
 
 body.flag-mode #score-container {
     position: static;
-    order: 4;
+    order: 5;
 }
 
 #score-container {
@@ -219,6 +228,29 @@ body.flag-mode #score-container {
     gap: 5px;
     z-index: 10;
     font-size: 0.9em;
+}
+
+#shop-container {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-80px); /* Position between speed and warning */
+    z-index: 10;
+    font-size: 0.9em;
+}
+
+#shop-button {
+    color: #90e0ef;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+#shop-button:hover {
+    color: #ffffff;
+    text-shadow: 0 0 8px #90e0ef;
+    transform: scale(1.05);
 }
 
 #warning-container {
@@ -544,14 +576,22 @@ button {
     /* Hide all flag game elements */
     #score-container,
     #speed-container,
+    #shop-container,
     #warning-container,
     #rip-container {
         display: none !important;
     }
     
-    /* Hide pins */
-    .pin {
+    /* Hide pins except boss-related pins (boss fights are important) */
+    .pin:not(.bomb-pin):not(.boss-pin):not(.mini-boss) {
         display: none !important;
+    }
+    
+    /* Ensure boss-related pins are always visible */
+    .bomb-pin,
+    .boss-pin,
+    .mini-boss {
+        display: block !important;
     }
     
     /* Make flag slower and more subtle */
@@ -642,6 +682,7 @@ button {
     /* Keep flag game elements visible */
     #score-container,
     #speed-container,
+    #shop-container,
     #warning-container,
     #rip-container {
         display: flex !important;
@@ -885,4 +926,142 @@ button {
         transform: scale(1.05);
         text-shadow: 4px 4px 8px rgba(68, 255, 68, 0.8);
     }
+}
+
+/* Leather Pin Styles */
+.leather-pin {
+    background-color: #8B4513 !important; /* Saddle brown */
+    border: 2px solid #D2B48C !important; /* Tan border */
+    box-shadow: 0 0 8px #8B4513 !important;
+}
+
+/* Shop Modal Styles */
+.shop-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10002;
+    font-family: 'Poppins', sans-serif;
+}
+
+.shop-content {
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    color: #ffffff;
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.shop-title {
+    font-size: 2em;
+    color: #90e0ef;
+    text-align: center;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px #90e0ef;
+}
+
+.shop-currency {
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 25px;
+    color: #ff6b6b;
+}
+
+.shop-item {
+    background-color: #2a2a2a;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 2px solid #444;
+    transition: all 0.3s ease;
+}
+
+.shop-item:hover {
+    border-color: #90e0ef;
+    box-shadow: 0 0 10px rgba(144, 224, 239, 0.3);
+}
+
+.shop-item.owned {
+    border-color: #44ff44;
+    background-color: #1a3a1a;
+}
+
+.shop-item.unaffordable {
+    opacity: 0.5;
+    border-color: #666;
+}
+
+.shop-item-name {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 5px;
+}
+
+.shop-item-description {
+    color: #cccccc;
+    margin-bottom: 10px;
+    font-size: 0.9em;
+}
+
+.shop-item-price {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #ff6b6b;
+}
+
+.shop-item.owned .shop-item-price {
+    color: #44ff44;
+}
+
+.shop-buy-button {
+    background-color: #90e0ef;
+    color: #000000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    float: right;
+    margin-top: 5px;
+}
+
+.shop-buy-button:hover {
+    background-color: #ffffff;
+    transform: scale(1.05);
+}
+
+.shop-buy-button:disabled {
+    background-color: #666;
+    color: #999;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.shop-close {
+    background-color: #ff4444;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+    width: 100%;
+    font-size: 1.1em;
+}
+
+.shop-close:hover {
+    background-color: #ff6666;
 }

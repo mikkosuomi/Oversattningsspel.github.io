@@ -163,8 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
             // Create hold timer visual
             holdTimerElement = createHoldTimer(e.clientX, e.clientY);
             
-            // Create the first pin at mouse position (regular pin initially)
-            createPinAtPosition(e.clientX, e.clientY);
+            // Create the first pin at mouse position (use level-appropriate type)
+            const pinType = getRandomPinType();
+            createPinAtPosition(e.clientX, e.clientY, pinType);
             
             e.preventDefault(); // Prevent text selection while dragging
         }
@@ -188,6 +189,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 pin.maxCollisions = 200; // 200 HP
                 pin.setAttribute('data-pin-type', 'fortress');
                 break;
+            case 'leather':
+                pin.classList.add('leather-pin');
+                pin.collisionCount = 0;
+                pin.maxCollisions = 50; // Much higher HP than regular pins
+                pin.setAttribute('data-pin-type', 'leather');
+                break;
             default:
                 pin.collisionCount = 0;
                 pin.maxCollisions = 10;
@@ -202,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pins.push(pin);
         
         // Create health bar for enhanced pins
-        if (pinType === 'heavy' || pinType === 'fortress') {
+        if (pinType === 'heavy' || pinType === 'fortress' || pinType === 'leather') {
             createHealthBar(pin);
         }
         
@@ -477,6 +484,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update and cleanup trail particles
         updateTrailParticles();
         
+        // Update magnetic field
+        updateMagneticField();
+        
         // Update hold timer visual
         if (isHoldingForEnhancedPin && holdTimerElement && mouseHoldStartTime > 0) {
             const holdDuration = Date.now() - mouseHoldStartTime;
@@ -584,35 +594,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (spark.parentNode) {
                     spark.parentNode.removeChild(spark);
                 }
-            }, 800);
+            }, 600);
         }
     }
 
     // Function to create damage indicator showing how much damage was dealt
-    function createDamageIndicator(x, y, damage, currentSpeed) {
+    function createDamageIndicator(x, y, damage, speed, isLineDamage = false) {
         const indicator = document.createElement('div');
         indicator.style.position = 'fixed';
         indicator.style.left = x + 'px';
         indicator.style.top = y + 'px';
-        indicator.style.color = '#ff4444';
-        indicator.style.fontSize = '14px';
+        if (isLineDamage) {
+            indicator.style.color = '#ffff00';
+            indicator.style.textShadow = '0 0 4px #ffaa00';
+            indicator.textContent = `⚡${damage}`;
+        } else {
+            indicator.style.color = '#87ceeb';
+            indicator.style.textShadow = '0 0 3px #4682b4';
+        }
+        indicator.style.fontSize = '12px';
         indicator.style.fontWeight = 'bold';
         indicator.style.pointerEvents = 'none';
-        indicator.style.zIndex = '10000';
+        indicator.style.zIndex = '10001';
         indicator.style.textShadow = '1px 1px 2px rgba(0,0,0,0.8)';
         indicator.style.transition = 'all 1s ease-out';
         
         // Show damage amount and speed context
         if (damage >= 10) {
             indicator.textContent = 'ONESHOT!';
-            indicator.style.color = '#ff0000';
-            indicator.style.fontSize = '16px';
         } else if (damage > 1) {
-            indicator.textContent = `-${damage} (${Math.floor(currentSpeed)})`;
-            indicator.style.color = '#ff6600';
+            indicator.textContent = `-${damage} (${Math.floor(speed)})`;
         } else {
             indicator.textContent = '-1';
-            indicator.style.color = '#ffaa44';
         }
         
         document.body.appendChild(indicator);
@@ -630,6 +643,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 1100);
     }
+
+// ...
 
     function checkCollision(pin) {
         // Special handling for bomb pins
@@ -658,20 +673,37 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const isGreenPin = pin.classList.contains('green-pin');
             
-            // Calculate damage based on speed
+            // Calculate damage based on speed and upgrades
             let damage = 1; // Base damage
+            
+            // Apply upgrade multipliers
+            if (playerUpgrades.plasmaEdge) {
+                damage *= 100; // 100x damage
+            } else if (playerUpgrades.blades) {
+                damage *= 10; // 10x damage
+            }
             
             // After 300 speed, damage scales with speed
             if (currentSpeed > 300) {
                 // Damage scales from 1 to higher values based on speed above 300
                 // At 600 speed = 2x damage, at 900 speed = 3x damage, etc.
                 const speedAbove300 = currentSpeed - 300;
-                damage = 1 + Math.floor(speedAbove300 / 300);
+                const speedMultiplier = 1 + Math.floor(speedAbove300 / 300);
+                damage *= speedMultiplier;
             }
             
-            // Oneshot red pins if speed > 1000
-            if (!isGreenPin && currentSpeed > 1000) {
-                damage = 10; // Set to max to trigger instant destruction
+            // Special damage handling for leather pins
+            const isLeatherPin = pin.classList.contains('leather-pin');
+            if (isLeatherPin && !isGreenPin) {
+                // Leather pins are very resistant to damage without upgrades
+                if (!playerUpgrades.blades && !playerUpgrades.plasmaEdge) {
+                    damage = Math.max(1, Math.floor(damage * 0.2)); // Only 20% damage without upgrades
+                    console.log(`🛡️ Leather armor resisted! Damage reduced to ${damage}`);
+                }
+                // No oneshot capability for leather pins without upgrades
+            } else if (!isGreenPin && currentSpeed > 1000 && !isLeatherPin) {
+                // Regular pins can still be oneshot at high speed
+                damage = Math.max(damage, 10); // Set to max to trigger instant destruction
                 console.log(`💥 ONESHOT! Speed: ${currentSpeed.toFixed(1)} - Instantly destroyed red pin!`);
             }
             
@@ -679,7 +711,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pin.collisionCount = (pin.collisionCount || 0) + damage;
             
             // Update health bar for enhanced pins
-            if ((pin.classList.contains('heavy-pin') || pin.classList.contains('fortress-pin')) && !isGreenPin) {
+            if ((pin.classList.contains('heavy-pin') || pin.classList.contains('fortress-pin') || pin.classList.contains('leather-pin')) && !isGreenPin) {
                 updateHealthBar(pin);
             }
             
@@ -732,10 +764,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     startAntiGravityEffect(5000);
                     console.log('🌟 Anti-gravity green pin activated!');
                 } else {
-                    // Regular green pin gives 300% speed boost and extends timer by 3 seconds
-                    if (speedMultiplier < 3) {
-                        // If no boost or lower boost, start 300% boost
-                        startSpeedBoost(3000, 3);
+                    // Use merged pin's boost value, default to 3 for regular green pins
+                    const boostMultiplier = pin.speedBoostMultiplier || 3;
+                    console.log(`🟢 Green pin hit! Boost multiplier: ${boostMultiplier}x`);
+                    
+                    if (speedMultiplier < boostMultiplier) {
+                        // If no boost or lower boost, start new boost
+                        startSpeedBoost(3000, boostMultiplier);
                     } else {
                         // If already boosted, extend the timer by 3 seconds
                         speedBoostEndTime += 3000;
@@ -750,19 +785,38 @@ document.addEventListener('DOMContentLoaded', () => {
             // Debug logging
             console.log(`${pinType} pin collision #${pin.collisionCount}/${isGreenPin ? '∞' : maxCollisions}`);
             
+            // Handle leather pin slowdown effect
+            if (pin.classList.contains('leather-pin') && !isGreenPin) {
+                applySlowdownEffect();
+            }
+            
             // Only destroy regular pins, green pins are indestructible
             if (!isGreenPin && pin.collisionCount >= maxCollisions) {
                 console.log(`Removing ${pinType} pin after ${pin.collisionCount} collisions`);
                 
-                // Increment destroyed pins counter
-                destroyedPinsCount++;
+                // Increment destroyed pins counter with leather pin bonus
+                const ripReward = pin.classList.contains('leather-pin') ? 10 : 1;
+                destroyedPinsCount += ripReward;
                 ripNumber.textContent = destroyedPinsCount.toString();
+                
+                if (ripReward > 1) {
+                    console.log(`🎯 Leather pin destroyed! +${ripReward} RIP points!`);
+                }
                 
                 // Remove health bar if it exists
                 if (pin.healthBar) {
                     pin.healthBar.remove();
                 }
                 
+                // Check if this was the master pin
+                if (pin === masterGreenPin) {
+                    masterGreenPin = null;
+                    masterPinPower = 0;
+                    removeDamageLine();
+                    console.log('💥 Master green pin destroyed!');
+                }
+                
+                // Remove pin
                 pin.remove();
                 pins = pins.filter(p => p !== pin);
                 return; // Exit early since pin is removed
@@ -890,10 +944,12 @@ document.addEventListener('DOMContentLoaded', () => {
             this.element.style.border = '10px solid #ff0000';
             this.element.style.borderRadius = '50%';
             this.element.style.boxShadow = '0 0 50px #ff0000, inset 0 0 50px rgba(255, 0, 0, 0.3)';
-            this.element.style.zIndex = '1004';
+            this.element.style.zIndex = '10000'; // Increased z-index to ensure visibility
             this.element.style.left = (this.x - 150) + 'px'; // Center the 300px pin
             this.element.style.top = (this.y - 150) + 'px';
             this.element.style.animation = 'bomb-pulse 1s ease-in-out infinite alternate';
+            this.element.style.display = 'block'; // Ensure it's displayed
+            this.element.style.visibility = 'visible'; // Ensure it's visible
             
             // Add bomb symbol
             const bombSymbol = document.createElement('div');
@@ -1403,18 +1459,25 @@ document.addEventListener('DOMContentLoaded', () => {
         continueButton.style.fontWeight = 'bold';
         
         const nextLevelButton = document.createElement('button');
-        nextLevelButton.textContent = 'Next Level (Coming Soon)';
+        if (currentLevel === 1) {
+            nextLevelButton.textContent = 'Advance to Level 2';
+            nextLevelButton.style.backgroundColor = '#ffaa44';
+            nextLevelButton.style.opacity = '1';
+            nextLevelButton.disabled = false;
+        } else {
+            nextLevelButton.textContent = 'Next Level (Coming Soon)';
+            nextLevelButton.style.backgroundColor = '#ffaa44';
+            nextLevelButton.style.opacity = '0.6';
+            nextLevelButton.disabled = true;
+        }
         nextLevelButton.style.fontSize = '1.2em';
         nextLevelButton.style.padding = '15px 30px';
-        nextLevelButton.style.backgroundColor = '#ffaa44';
         nextLevelButton.style.color = '#000000';
         nextLevelButton.style.border = 'none';
         nextLevelButton.style.borderRadius = '10px';
         nextLevelButton.style.cursor = 'pointer';
         nextLevelButton.style.fontFamily = 'Poppins, sans-serif';
         nextLevelButton.style.fontWeight = 'bold';
-        nextLevelButton.style.opacity = '0.6';
-        nextLevelButton.disabled = true;
         
         continueButton.addEventListener('click', () => {
             // Reset bomb state and continue playing
@@ -1427,6 +1490,24 @@ document.addEventListener('DOMContentLoaded', () => {
             levelCompleteScreen.remove();
             
             console.log('🎮 Continuing to play after level completion!');
+        });
+        
+        nextLevelButton.addEventListener('click', () => {
+            if (currentLevel === 1 && !nextLevelButton.disabled) {
+                // Advance to Level 2
+                switchToLevel(2);
+                
+                // Reset bomb state
+                gameOver = false;
+                levelComplete = false;
+                bombActive = false;
+                bombPin = null;
+                
+                // Remove the screen
+                levelCompleteScreen.remove();
+                
+                console.log('🎆 Advanced to Level 2! Leather pins incoming!');
+            }
         });
         
         buttonContainer.appendChild(continueButton);
@@ -1525,7 +1606,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 
-                createPinAtPosition(e.clientX, e.clientY);
+                const pinType = getRandomPinType();
+                createPinAtPosition(e.clientX, e.clientY, pinType);
                 lastPinX = e.clientX;
                 lastPinY = e.clientY;
             }
@@ -1592,6 +1674,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const warningText = document.getElementById('warning-text');
     const resetText = document.getElementById('reset-text');
     const ripNumber = document.getElementById('rip-number');
+    const shopButton = document.getElementById('shop-button');
     
     // Initialize RIP counter
     let destroyedPinsCount = 0;
@@ -1616,6 +1699,521 @@ document.addEventListener('DOMContentLoaded', () => {
     let bombActive = false;
     let gameOver = false;
     let levelComplete = false;
+    
+    // Level system
+    let currentLevel = 1;
+    let levelTitle = document.querySelector('h1');
+    
+    // Shop system
+    let shopOpen = false;
+    let playerUpgrades = {
+        blades: false,
+        plasmaEdge: false,
+        magneticField: false
+    };
+    
+    // Slowdown system
+    let slowdownActive = false;
+    let slowdownEndTime = 0;
+    let lastSlowdownTime = 0;
+    const SLOWDOWN_COOLDOWN = 3000; // 3 seconds
+    const SLOWDOWN_DURATION = 3000; // 3 seconds
+    
+    // Master Green Pin Damage Line System
+    let masterGreenPin = null;
+    let masterPinPower = 0; // Accumulated power from merges
+    let damageLineElement = null;
+    
+    // Level System Functions
+    function updateLevelTitle() {
+        if (currentLevel === 1) {
+            levelTitle.textContent = 'Översättningsspel.';
+        } else {
+            levelTitle.textContent = `Översättningsspel. ${currentLevel}`;
+        }
+    }
+    
+    function switchToLevel(level) {
+        currentLevel = level;
+        updateLevelTitle();
+        console.log(`🎯 Switched to Level ${level}`);
+    }
+    
+    function getRandomPinType() {
+        if (currentLevel === 1) {
+            return 'regular';
+        } else if (currentLevel === 2) {
+            // Level 2: Mostly leather pins with some regular red pins
+            return Math.random() < 0.8 ? 'leather' : 'regular';
+        }
+        return 'regular';
+    }
+    
+    // Shop System Functions
+    function openShop() {
+        if (shopOpen) return;
+        shopOpen = true;
+        
+        const shopModal = document.createElement('div');
+        shopModal.classList.add('shop-modal');
+        shopModal.id = 'shop-modal';
+        
+        const shopContent = document.createElement('div');
+        shopContent.classList.add('shop-content');
+        
+        shopContent.innerHTML = `
+            <div class="shop-title">🛒 Flag Upgrades Shop</div>
+            <div class="shop-currency">💰 RIP Points: ${destroyedPinsCount}</div>
+            
+            <div class="shop-item ${playerUpgrades.blades ? 'owned' : (destroyedPinsCount >= 5000 ? '' : 'unaffordable')}" data-upgrade="blades">
+                <div class="shop-item-name">⚔️ Blades</div>
+                <div class="shop-item-description">10x damage to all pins, reduces leather slowdown to 5%</div>
+                <div class="shop-item-price">${playerUpgrades.blades ? 'OWNED' : '5,000 RIP'}</div>
+                ${!playerUpgrades.blades ? `<button class="shop-buy-button" ${destroyedPinsCount >= 5000 ? '' : 'disabled'}>Buy</button>` : ''}
+            </div>
+            
+            <div class="shop-item ${playerUpgrades.plasmaEdge ? 'owned' : (destroyedPinsCount >= 50000 ? '' : 'unaffordable')}" data-upgrade="plasmaEdge">
+                <div class="shop-item-name">⚡ Plasma Edge</div>
+                <div class="shop-item-description">100x damage to all pins (requires Blades)</div>
+                <div class="shop-item-price">${playerUpgrades.plasmaEdge ? 'OWNED' : '50,000 RIP'}</div>
+                ${!playerUpgrades.plasmaEdge && playerUpgrades.blades ? `<button class="shop-buy-button" ${destroyedPinsCount >= 50000 ? '' : 'disabled'}>Buy</button>` : ''}
+                ${!playerUpgrades.blades && !playerUpgrades.plasmaEdge ? '<div style="color: #999; font-size: 0.8em;">Requires Blades</div>' : ''}
+            </div>
+            
+            <div class="shop-item ${playerUpgrades.magneticField ? 'owned' : (destroyedPinsCount >= 10000 ? '' : 'unaffordable')}" data-upgrade="magneticField">
+                <div class="shop-item-name">🧲 Magnetic Field</div>
+                <div class="shop-item-description">Continuously pulls green pins towards flag at speed 5</div>
+                <div class="shop-item-price">${playerUpgrades.magneticField ? 'OWNED' : '10,000 RIP'}</div>
+                ${!playerUpgrades.magneticField ? `<button class="shop-buy-button" ${destroyedPinsCount >= 10000 ? '' : 'disabled'}>Buy</button>` : ''}
+            </div>
+            
+            <button class="shop-close">Close Shop</button>
+        `;
+        
+        shopModal.appendChild(shopContent);
+        document.body.appendChild(shopModal);
+        
+        // Add event listeners
+        shopModal.querySelector('.shop-close').addEventListener('click', closeShop);
+        
+        shopModal.querySelectorAll('.shop-buy-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const upgradeType = e.target.closest('.shop-item').dataset.upgrade;
+                buyUpgrade(upgradeType);
+            });
+        });
+        
+        // Close on background click
+        shopModal.addEventListener('click', (e) => {
+            if (e.target === shopModal) {
+                closeShop();
+            }
+        });
+    }
+    
+    function closeShop() {
+        if (!shopOpen) return;
+        shopOpen = false;
+        
+        const shopModal = document.getElementById('shop-modal');
+        if (shopModal) {
+            shopModal.remove();
+        }
+    }
+    
+    function buyUpgrade(upgradeType) {
+        const prices = {
+            blades: 5000,
+            plasmaEdge: 50000,
+            magneticField: 10000
+        };
+        
+        const price = prices[upgradeType];
+        
+        if (playerUpgrades[upgradeType]) {
+            console.log(`Already own ${upgradeType}`);
+            return;
+        }
+        
+        if (upgradeType === 'plasmaEdge' && !playerUpgrades.blades) {
+            console.log('Need Blades before buying Plasma Edge');
+            return;
+        }
+        
+        if (destroyedPinsCount >= price) {
+            destroyedPinsCount -= price;
+            playerUpgrades[upgradeType] = true;
+            ripNumber.textContent = destroyedPinsCount.toString();
+            
+            console.log(`🛒 Purchased ${upgradeType} for ${price} RIP!`);
+            
+            // Close and reopen shop to update display
+            closeShop();
+            setTimeout(() => openShop(), 100);
+        } else {
+            console.log(`Not enough RIP for ${upgradeType}. Need ${price}, have ${destroyedPinsCount}`);
+        }
+    }
+    
+    // Slowdown System Functions
+    function applySlowdownEffect() {
+        const currentTime = Date.now();
+        
+        // Check cooldown
+        if (currentTime - lastSlowdownTime < SLOWDOWN_COOLDOWN) {
+            return false; // Still on cooldown
+        }
+        
+        // Apply slowdown based on upgrades
+        let slowdownAmount = 0.2; // 20% slowdown
+        if (playerUpgrades.blades) {
+            slowdownAmount = 0.05; // 5% slowdown with blades
+        }
+        
+        slowdownActive = true;
+        slowdownEndTime = currentTime + SLOWDOWN_DURATION;
+        lastSlowdownTime = currentTime;
+        
+        // Apply the slowdown by reducing speed multipliers temporarily
+        const originalSpeedMultiplier = speedMultiplier;
+        const originalBaseSpeedMultiplier = baseSpeedMultiplier;
+        
+        speedMultiplier *= (1 - slowdownAmount);
+        baseSpeedMultiplier *= (1 - slowdownAmount);
+        
+        console.log(`🐌 Slowdown applied: ${(slowdownAmount * 100).toFixed(0)}% for ${SLOWDOWN_DURATION/1000}s`);
+        
+        // Remove slowdown after duration
+        setTimeout(() => {
+            if (slowdownActive && Date.now() >= slowdownEndTime) {
+                speedMultiplier = originalSpeedMultiplier;
+                baseSpeedMultiplier = originalBaseSpeedMultiplier;
+                slowdownActive = false;
+                console.log('🏃 Slowdown effect ended');
+            }
+        }, SLOWDOWN_DURATION);
+        
+        return true; // Slowdown was applied
+    }
+    
+    // Green Pin Merging System
+    function checkGreenPinMerging() {
+        const greenPins = pins.filter(pin => pin.classList.contains('green-pin'));
+        const mergedPins = new Set();
+        
+        for (let i = 0; i < greenPins.length; i++) {
+            if (mergedPins.has(greenPins[i])) continue;
+            
+            const pin1 = greenPins[i];
+            const pin1Left = parseFloat(pin1.style.left) || 0;
+            const pin1Top = parseFloat(pin1.style.top) || 0;
+            const pin1Size = parseFloat(pin1.style.width) || 10;
+            const pin1CenterX = pin1Left + pin1Size / 2;
+            const pin1CenterY = pin1Top + pin1Size / 2;
+            
+            for (let j = i + 1; j < greenPins.length; j++) {
+                if (mergedPins.has(greenPins[j])) continue;
+                
+                const pin2 = greenPins[j];
+                const pin2Left = parseFloat(pin2.style.left) || 0;
+                const pin2Top = parseFloat(pin2.style.top) || 0;
+                const pin2Size = parseFloat(pin2.style.width) || 10;
+                const pin2CenterX = pin2Left + pin2Size / 2;
+                const pin2CenterY = pin2Top + pin2Size / 2;
+                
+                // Check if pins are close enough to merge (within 15px)
+                const distance = Math.sqrt(
+                    Math.pow(pin1CenterX - pin2CenterX, 2) + 
+                    Math.pow(pin1CenterY - pin2CenterY, 2)
+                );
+                
+                if (distance < 15) {
+                    // Merge the pins
+                    mergeGreenPins(pin1, pin2);
+                    mergedPins.add(pin1);
+                    mergedPins.add(pin2);
+                    break; // Only merge one pair per frame to avoid complexity
+                }
+            }
+        }
+    }
+    
+    function mergeGreenPins(pin1, pin2) {
+        // Get current sizes and boost values
+        const pin1Size = parseFloat(pin1.style.width) || 10;
+        const pin2Size = parseFloat(pin2.style.width) || 10;
+        const pin1Boost = pin1.speedBoostMultiplier || 200;
+        const pin2Boost = pin2.speedBoostMultiplier || 200;
+        const pin1Power = pin1.masterPower || 1; // Default to 1 for regular green pins
+        const pin2Power = pin2.masterPower || 1;
+        
+        // Calculate new size (5% larger than the larger pin, capped at 20px like mini-bosses)
+        const uncappedSize = Math.max(pin1Size, pin2Size) * 1.05;
+        const newSize = Math.min(uncappedSize, 20); // Cap at 20px to prevent gameplay interference
+        
+        // Calculate combined boost (average of both, but with bonus for merging)
+        const combinedBoost = Math.min(500, (pin1Boost + pin2Boost) * 0.6); // Cap at 500, 60% of sum to prevent exponential growth
+        
+        // Calculate combined power (sum of both pins' power)
+        const combinedPower = pin1Power + pin2Power;
+        
+        // Get current CSS positions and calculate centers
+        const pin1Left = parseFloat(pin1.style.left) || 0;
+        const pin1Top = parseFloat(pin1.style.top) || 0;
+        const pin2Left = parseFloat(pin2.style.left) || 0;
+        const pin2Top = parseFloat(pin2.style.top) || 0;
+        
+        // Calculate center positions
+        const pin1CenterX = pin1Left + pin1Size / 2;
+        const pin1CenterY = pin1Top + pin1Size / 2;
+        const pin2CenterX = pin2Left + pin2Size / 2;
+        const pin2CenterY = pin2Top + pin2Size / 2;
+        
+        // Position the merged pin at the center midpoint
+        const midCenterX = (pin1CenterX + pin2CenterX) / 2;
+        const midCenterY = (pin1CenterY + pin2CenterY) / 2;
+        
+        // Update pin1 with merged properties (convert center back to top-left)
+        pin1.style.width = newSize + 'px';
+        pin1.style.height = newSize + 'px';
+        pin1.style.left = (midCenterX - newSize / 2) + 'px';
+        pin1.style.top = (midCenterY - newSize / 2) + 'px';
+        pin1.speedBoostMultiplier = combinedBoost;
+        pin1.masterPower = combinedPower;
+        
+        // Set as master pin if this is the first merge or if it's more powerful
+        if (!masterGreenPin || combinedPower > masterPinPower) {
+            masterGreenPin = pin1;
+            masterPinPower = combinedPower;
+            console.log(`🎆 New master green pin! Power: ${combinedPower}`);
+        }
+        
+        // Add visual effect for merged pin (enhanced for master)
+        const isMaster = pin1 === masterGreenPin;
+        const glowIntensity = Math.min(25, newSize + (isMaster ? 10 : 0));
+        pin1.style.boxShadow = `0 0 ${glowIntensity}px #00ff00, 0 0 ${glowIntensity * 2}px rgba(0, 255, 0, ${isMaster ? 0.5 : 0.3})`;
+        
+        // Add master pin indicator
+        if (isMaster) {
+            pin1.style.border = '2px solid #ffff00'; // Golden border for master
+        }
+        
+        // Remove pin2
+        pin2.remove();
+        pins = pins.filter(p => p !== pin2);
+        
+        const sizeCapped = uncappedSize > 20;
+        console.log(`🔗 Green pins merged! Size: ${newSize.toFixed(1)}px${sizeCapped ? ' (CAPPED)' : ''}, Boost: ${combinedBoost}x, Power: ${combinedPower}`);
+        
+        // Update damage line if magnetic field is active
+        updateDamageLine();
+    }
+    
+    // Magnetic Field System
+    function updateMagneticField() {
+        if (!playerUpgrades.magneticField) return;
+        
+        const flagCenterX = x + 50;
+        const flagCenterY = y + 30;
+        const magneticSpeed = 5;
+        
+        pins.forEach(pin => {
+            if (!pin.classList.contains('green-pin')) return;
+            
+            // Use CSS positions consistently
+            const pinLeft = parseFloat(pin.style.left) || 0;
+            const pinTop = parseFloat(pin.style.top) || 0;
+            const pinSize = parseFloat(pin.style.width) || 10;
+            const pinCenterX = pinLeft + pinSize / 2;
+            const pinCenterY = pinTop + pinSize / 2;
+            
+            // Calculate direction to flag
+            const deltaX = flagCenterX - pinCenterX;
+            const deltaY = flagCenterY - pinCenterY;
+            const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+            
+            if (distance > 10) { // Don't pull if too close
+                const normalX = deltaX / distance;
+                const normalY = deltaY / distance;
+                
+                // Calculate new center position
+                let newCenterX = pinCenterX + (normalX * magneticSpeed);
+                let newCenterY = pinCenterY + (normalY * magneticSpeed);
+                
+                // Keep pins on screen (account for pin size)
+                newCenterX = Math.max(pinSize / 2, Math.min(newCenterX, window.innerWidth - pinSize / 2));
+                newCenterY = Math.max(pinSize / 2, Math.min(newCenterY, window.innerHeight - pinSize / 2));
+                
+                // Update pin position (convert center back to top-left)
+                pin.style.left = (newCenterX - pinSize / 2) + 'px';
+                pin.style.top = (newCenterY - pinSize / 2) + 'px';
+            }
+        });
+        
+        // Check for green pin merging after magnetic field update
+        checkGreenPinMerging();
+        
+        // Update damage line
+        updateDamageLine();
+    }
+    
+    // Damage Line System
+    function updateDamageLine() {
+        // Only show damage line if magnetic field is active and we have a master pin
+        if (!playerUpgrades.magneticField || !masterGreenPin || !pins.includes(masterGreenPin)) {
+            removeDamageLine();
+            return;
+        }
+        
+        // Get master pin position
+        const masterLeft = parseFloat(masterGreenPin.style.left) || 0;
+        const masterTop = parseFloat(masterGreenPin.style.top) || 0;
+        const masterSize = parseFloat(masterGreenPin.style.width) || 10;
+        const masterCenterX = masterLeft + masterSize / 2;
+        const masterCenterY = masterTop + masterSize / 2;
+        
+        // Get flag position
+        const flagCenterX = x + 50;
+        const flagCenterY = y + 30;
+        
+        // Calculate line properties
+        const deltaX = flagCenterX - masterCenterX;
+        const deltaY = flagCenterY - masterCenterY;
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const angle = Math.atan2(deltaY, deltaX) * 180 / Math.PI;
+        
+        // Calculate line thickness based on master pin power
+        // Power 2 = very thin (1px), Power 40+ = thick (8px)
+        const basePower = Math.max(2, masterPinPower);
+        const thickness = Math.min(8, Math.max(1, Math.floor(basePower / 5)));
+        
+        // Create or update damage line element
+        if (!damageLineElement) {
+            damageLineElement = document.createElement('div');
+            damageLineElement.id = 'damage-line';
+            damageLineElement.style.position = 'fixed';
+            damageLineElement.style.transformOrigin = '0 50%';
+            damageLineElement.style.pointerEvents = 'none';
+            damageLineElement.style.zIndex = '999';
+            document.body.appendChild(damageLineElement);
+        }
+        
+        // Update line properties
+        damageLineElement.style.left = masterCenterX + 'px';
+        damageLineElement.style.top = (masterCenterY - thickness / 2) + 'px';
+        damageLineElement.style.width = distance + 'px';
+        damageLineElement.style.height = thickness + 'px';
+        damageLineElement.style.transform = `rotate(${angle}deg)`;
+        
+        // Visual styling based on power
+        const opacity = Math.min(0.8, 0.3 + (basePower / 50));
+        const glowSize = Math.min(10, thickness * 2);
+        damageLineElement.style.background = `linear-gradient(90deg, 
+            rgba(0, 255, 0, ${opacity}) 0%, 
+            rgba(255, 255, 0, ${opacity * 0.8}) 50%, 
+            rgba(0, 255, 0, ${opacity}) 100%)`;
+        damageLineElement.style.boxShadow = `0 0 ${glowSize}px rgba(0, 255, 0, 0.6)`;
+        damageLineElement.style.borderRadius = thickness / 2 + 'px';
+        
+        // Check for line collisions with destroyable pins
+        checkLineCollisions(masterCenterX, masterCenterY, flagCenterX, flagCenterY, thickness);
+    }
+    
+    function removeDamageLine() {
+        if (damageLineElement) {
+            damageLineElement.remove();
+            damageLineElement = null;
+        }
+    }
+    
+    function checkLineCollisions(x1, y1, x2, y2, lineThickness) {
+        const lineDamage = Math.max(1, Math.floor(masterPinPower / 2)); // Damage scales with power
+        
+        pins.forEach(pin => {
+            // Skip green pins, boss pins, and already destroyed pins
+            if (pin.classList.contains('green-pin') || 
+                pin.classList.contains('boss-pin') || 
+                pin.classList.contains('bomb-pin') || 
+                pin.classList.contains('mini-boss') || 
+                pin.collisionCount >= (pin.maxCollisions || 10)) {
+                return;
+            }
+            
+            // Get pin position
+            const pinLeft = parseFloat(pin.style.left) || 0;
+            const pinTop = parseFloat(pin.style.top) || 0;
+            const pinSize = parseFloat(pin.style.width) || 10;
+            const pinCenterX = pinLeft + pinSize / 2;
+            const pinCenterY = pinTop + pinSize / 2;
+            
+            // Check if pin intersects with line using point-to-line distance
+            const distance = pointToLineDistance(pinCenterX, pinCenterY, x1, y1, x2, y2);
+            const collisionThreshold = (pinSize / 2) + (lineThickness / 2);
+            
+            if (distance <= collisionThreshold) {
+                // Apply damage
+                pin.collisionCount = (pin.collisionCount || 0) + lineDamage;
+                
+                // Create damage indicator
+                createDamageIndicator(pinCenterX, pinCenterY - 15, lineDamage, 0, true);
+                
+                // Update health bar
+                if (pin.healthBar) {
+                    updateHealthBar(pin);
+                }
+                
+                // Check if pin should be destroyed
+                const maxCollisions = pin.maxCollisions || 10;
+                if (pin.collisionCount >= maxCollisions) {
+                    // Award RIP points
+                    const ripReward = pin.classList.contains('leather-pin') ? 10 : 1;
+                    destroyedPinsCount += ripReward;
+                    ripNumber.textContent = destroyedPinsCount.toString();
+                    
+                    // Remove pin
+                    if (pin.healthBar) {
+                        pin.healthBar.remove();
+                    }
+                    pin.remove();
+                    pins = pins.filter(p => p !== pin);
+                    
+                    console.log(`⚡ Damage line destroyed pin! Power: ${masterPinPower}, Damage: ${lineDamage}`);
+                }
+            }
+        });
+    }
+    
+    // Helper function to calculate distance from point to line
+    function pointToLineDistance(px, py, x1, y1, x2, y2) {
+        const A = px - x1;
+        const B = py - y1;
+        const C = x2 - x1;
+        const D = y2 - y1;
+        
+        const dot = A * C + B * D;
+        const lenSq = C * C + D * D;
+        
+        if (lenSq === 0) return Math.sqrt(A * A + B * B);
+        
+        let param = dot / lenSq;
+        
+        let xx, yy;
+        
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        } else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        } else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+        
+        const dx = px - xx;
+        const dy = py - yy;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
     
     // Function to generate weighted random speed for flag reset
     function getRandomFlagSpeed() {
@@ -1676,6 +2274,9 @@ document.addEventListener('DOMContentLoaded', () => {
             this.collisionCount = 0;
             this.isDestroyed = false;
             this.createdAt = Date.now();
+            
+            // Debug logging for boss creation
+            console.log(`🎯 Creating ${type.toUpperCase()} boss at (${x.toFixed(1)}, ${y.toFixed(1)}) targeting (${targetX.toFixed(1)}, ${targetY.toFixed(1)})`);
             
             // Type-specific properties
             this.setupTypeProperties();
@@ -1781,6 +2382,13 @@ document.addEventListener('DOMContentLoaded', () => {
         update() {
             if (this.isDestroyed) return;
             
+            // Debug: Periodic health check (every 5 seconds)
+            const now = Date.now();
+            if (!this.lastHealthLog || now - this.lastHealthLog > 5000) {
+                this.lastHealthLog = now;
+                console.log(`❤️ ${this.type.toUpperCase()} boss health: ${this.collisionCount}/${this.maxCollisions} at (${this.x.toFixed(1)}, ${this.y.toFixed(1)})`);
+            }
+            
             // Update position based on type
             this.updateMovement();
             
@@ -1796,9 +2404,18 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update health bar
             this.updateHealthBar();
             
-            // Check if boss should be removed (off screen)
-            if (this.x < -100 || this.x > window.innerWidth + 100 || 
-                this.y < -100 || this.y > window.innerHeight + 100) {
+            // Check if boss should be removed (completely off screen with generous buffer)
+            // Boss is 50px wide, so use 75px buffer to ensure it's completely gone
+            const screenBounds = {
+                left: -75,
+                right: window.innerWidth + 75,
+                top: -75,
+                bottom: window.innerHeight + 75
+            };
+            
+            if (this.x < screenBounds.left || this.x > screenBounds.right || 
+                this.y < screenBounds.top || this.y > screenBounds.bottom) {
+                console.log(`🏃 ${this.type.toUpperCase()} boss escaped! Position: (${this.x.toFixed(1)}, ${this.y.toFixed(1)}) Screen bounds: ${screenBounds.left} to ${screenBounds.right}, ${screenBounds.top} to ${screenBounds.bottom}`);
                 this.destroy(false); // Don't give reward for escaping
             }
         }
@@ -1879,6 +2496,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.isDestroyed = true;
             
+            // Debug logging to track boss destruction
+            const reason = giveReward ? 'DEFEATED' : 'ESCAPED';
+            console.log(`💀 ${this.type.toUpperCase()} BOSS ${reason}! Position: (${this.x.toFixed(1)}, ${this.y.toFixed(1)}) Health: ${this.collisionCount}/${this.maxCollisions}`);
+            console.trace('Boss destruction stack trace:');
+            
             if (giveReward) {
                 this.giveReward();
             }
@@ -1896,8 +2518,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (activeBossPin === this) {
                 activeBossPin = null;
             }
-            
-            console.log(`🏆 ${this.type.toUpperCase()} BOSS DEFEATED!`);
         }
         
         giveReward() {
@@ -1998,9 +2618,11 @@ document.addEventListener('DOMContentLoaded', () => {
             
             this.updateHealthBar();
             
-            // Check if mini-boss should be removed (off screen)
-            if (this.x < -50 || this.x > window.innerWidth + 50 || 
-                this.y < -50 || this.y > window.innerHeight + 50) {
+            // Check if mini-boss should be removed (completely off screen with generous buffer)
+            // Mini-boss is 20px wide, so use 30px buffer to ensure it's completely gone
+            if (this.x < -30 || this.x > window.innerWidth + 30 || 
+                this.y < -30 || this.y > window.innerHeight + 30) {
+                console.log(`🏃 Mini-boss escaped! Position: (${this.x.toFixed(1)}, ${this.y.toFixed(1)})`);
                 this.destroy(false);
             }
         }
@@ -2394,4 +3016,8 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePlayerGuessDisplay();
         }
     });
+    
+    // Initialize level system and shop after all functions are defined
+    updateLevelTitle();
+    shopButton.addEventListener('click', openShop);
 });
