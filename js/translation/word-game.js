@@ -208,11 +208,27 @@ function updateFlagDisplay() {
 
 async function fetchSentencesFromGoogleSheets() {
     const SHEET_ID = '1_LmZkkfmYsRPaFPLaWmWI7y0ERXuaCSV6TSdBe6uzws';
-    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20*`;
+    
+    console.log('🔗 Fetching from Google Sheets:', url);
     
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json, text/plain, */*'
+            }
+        });
+        
+        console.log('📡 Response status:', response.status, response.statusText);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const text = await response.text();
+        console.log('📄 Raw response length:', text.length);
         
         // Google Sheets returns JSONP, need to extract JSON
         const jsonText = text.substring(47).slice(0, -2); // Remove "google.visualization.Query.setResponse(" and ");"
@@ -238,9 +254,85 @@ async function fetchSentencesFromGoogleSheets() {
             }
         }
         
+        console.log(`✅ Successfully parsed ${sentences.length} sentences from Google Sheets`);
         return sentences;
     } catch (error) {
-        console.error('Failed to fetch from Google Sheets:', error);
-        throw error;
+        console.error('❌ Failed to fetch from Google Sheets:', error);
+        console.log('🔄 Trying alternative JSONP approach...');
+        
+        // Try JSONP approach as fallback
+        return await fetchSentencesViaJSONP();
     }
+}
+
+async function fetchSentencesViaJSONP() {
+    return new Promise((resolve, reject) => {
+        const SHEET_ID = '1_LmZkkfmYsRPaFPLaWmWI7y0ERXuaCSV6TSdBe6uzws';
+        const callbackName = 'googleSheetsCallback_' + Date.now();
+        const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&tq=SELECT%20*&callback=${callbackName}`;
+        
+        console.log('🔗 Trying JSONP approach:', url);
+        
+        // Create callback function
+        window[callbackName] = function(data) {
+            try {
+                const sentences = [];
+                const rows = data.table.rows;
+                
+                // Parse rows - Column A = Swedish, Column B = Finnish
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.c && row.c.length >= 2) {
+                        const swedish = row.c[0]?.v || '';
+                        const finnish = row.c[1]?.v || '';
+                        
+                        // Only add rows with both Swedish and Finnish text
+                        if (swedish.toString().trim() && finnish.toString().trim()) {
+                            sentences.push({
+                                swedish: swedish.toString().trim(),
+                                finnish: finnish.toString().trim()
+                            });
+                        }
+                    }
+                }
+                
+                console.log(`✅ JSONP: Successfully parsed ${sentences.length} sentences`);
+                cleanup();
+                resolve(sentences);
+            } catch (error) {
+                console.error('❌ JSONP parsing error:', error);
+                cleanup();
+                reject(error);
+            }
+        };
+        
+        // Create script element
+        const script = document.createElement('script');
+        script.src = url;
+        script.onerror = () => {
+            console.error('❌ JSONP script loading failed');
+            cleanup();
+            reject(new Error('JSONP script loading failed'));
+        };
+        
+        // Cleanup function
+        const cleanup = () => {
+            if (window[callbackName]) {
+                delete window[callbackName];
+            }
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+        };
+        
+        // Add script to page
+        document.head.appendChild(script);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+            console.error('❌ JSONP timeout');
+            cleanup();
+            reject(new Error('JSONP timeout'));
+        }, 10000);
+    });
 }
